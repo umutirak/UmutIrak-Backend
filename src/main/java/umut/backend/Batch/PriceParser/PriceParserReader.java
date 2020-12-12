@@ -67,7 +67,7 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
             System.out.println("Working on " + finalUrl);
             Document document;
             try {
-                document = Jsoup.connect(finalUrl).get();
+                document = Jsoup.connect(finalUrl).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0").get();
             } catch (IOException e) {
                 e.printStackTrace();
                 return;

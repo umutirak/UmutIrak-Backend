@@ -20,7 +20,9 @@ public abstract class AmazonWebsite {
         ProductAvailability availability = new ProductAvailability();
         availability.setRegion(getAmazonRegion());
         try {
-            String digitalAvailability = Jsoup.connect(getDigitalProductUrl()).get()
+            String digitalAvailability = Jsoup.connect(getDigitalProductUrl())
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0")
+                    .get()
                     .getElementById("availability")
                     .tagName("span")
                     .children()
