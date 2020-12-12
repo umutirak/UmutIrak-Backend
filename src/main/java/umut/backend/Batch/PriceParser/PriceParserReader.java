@@ -1,6 +1,9 @@
 package umut.backend.Batch.PriceParser;
 
 import lombok.RequiredArgsConstructor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -66,14 +69,18 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
             String finalUrl = categoryUrl + "?sayfa=" + index;
             System.out.println("Working on " + finalUrl);
             Document document;
+            Response response;
             try {
-                document = Jsoup.connect(finalUrl).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
+                OkHttpClient httpClient = new OkHttpClient();
+                Request request = new Request.Builder().url(finalUrl).build();
+                response = httpClient.newCall(request).execute();
+                document = Jsoup.parse(response.body().string());
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
             }
 
-            if (index != 1 && !document.baseUri().equals(finalUrl)) {
+            if (index != 1 && !finalUrl.equals(response.request().url().toString())) {
                 break;
             }
 

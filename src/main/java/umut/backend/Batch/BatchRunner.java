@@ -22,7 +22,7 @@ public class BatchRunner {
     @Qualifier("ps5FinderJob")
     private final Job ps5FinderJob;
 
-    @Scheduled(initialDelay = 1000 * 10, fixedDelayString = "${app.priceParser.fixedDelay}")
+    @Scheduled(initialDelay = 1000 * 2, fixedDelayString = "${app.priceParser.fixedDelay}")
     public void performPriceParser() throws Exception {
         log.info("Starting Price Parser");
         jobLauncher.run(priceParserJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
