@@ -5,12 +5,14 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
 public class MailUtil {
 
-    private static final String sendGridApiKey = System.getenv("SENDGRID_APIKEY");
+    @Value("${app.sendgrid.apikey")
+    private static String sendGridApiKey;
 
     public static void sendMail(Mail mail) throws IOException {
         SendGrid sg = new SendGrid(sendGridApiKey);
