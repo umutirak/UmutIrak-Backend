@@ -1,5 +1,9 @@
 package umut.backend.Batch.PriceParser;
 
+import com.mailjet.client.errors.MailjetException;
+import com.mailjet.client.transactional.SendContact;
+import com.mailjet.client.transactional.TrackOpens;
+import com.mailjet.client.transactional.TransactionalEmail;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -87,15 +91,24 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
     }
 
     private void sendMail(String mailContent) {
-        Email from = new Email("umt955@gmail.com");
-        String subject = "Price Drops !";
-        Content content = new Content("text/html", mailContent);
-        Email to = new Email("dujiool@gmail.com");
-        Mail mail = new Mail(from, subject, to, content);
+//        Email from = new Email("umt955@gmail.com");
+//        String subject = "Price Drops !";
+//        Content content = new Content("text/html", mailContent);
+//        Email to = new Email("dujiool@gmail.com");
+//        Mail mail = new Mail(from, subject, to, content);
+
+        TransactionalEmail mail = TransactionalEmail
+                .builder()
+                .to(new SendContact("dujiool@gmail.com"))
+                .from(new SendContact("umt955@gmail.com"))
+                .htmlPart(mailContent)
+                .subject("Price Drops !")
+                .trackOpens(TrackOpens.ENABLED)
+                .build();
 
         try {
             MailUtil.sendMail(mail);
-        } catch (IOException e) {
+        } catch (MailjetException e) {
             e.printStackTrace();
         }
     }

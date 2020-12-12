@@ -1,5 +1,9 @@
 package umut.backend.Batch.Ps5Finder;
 
+import com.mailjet.client.errors.MailjetException;
+import com.mailjet.client.transactional.SendContact;
+import com.mailjet.client.transactional.TrackOpens;
+import com.mailjet.client.transactional.TransactionalEmail;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
@@ -45,16 +49,21 @@ public class Ps5FinderWriter implements ItemWriter<ProductAvailability> {
                 .map(q -> q.getKey() + " has " + q.getValue())
                 .reduce(System.lineSeparator(), (partial, element) -> partial + System.lineSeparator() + element);
 
-        Email from = new Email("umt955@gmail.com");
-        String subject = "Amazon PS5 Availability !";
-        Content content = new Content("text/plain", "PS5 Available Regions " + availability);
-        Email to = new Email("umt955@gmail.com");
-        Mail mail = new Mail(from, subject, to, content);
+        TransactionalEmail mail = TransactionalEmail
+                .builder()
+                .to(new SendContact("dujiool@gmail.com"))
+                .from(new SendContact("umt955@gmail.com"))
+                .htmlPart("PS5 Available Regions " + availability)
+                .subject("Price Drops !")
+                .trackOpens(TrackOpens.ENABLED)
+                .build();
+
 
         try {
             MailUtil.sendMail(mail);
-        } catch (IOException e) {
+        } catch (MailjetException e) {
             e.printStackTrace();
         }
+
     }
 }

@@ -61,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/productCategories/**")
                 .permitAll()
-                .antMatchers("/heroku")
+                .antMatchers("/heroku/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
