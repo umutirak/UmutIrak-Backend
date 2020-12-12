@@ -15,11 +15,6 @@ public class MailUtil {
 //    @Value("${app.sendgrid.apikey")
 //    private static String sendGridApiKey;
 
-    @Value("${app.mailjet.apiKey}")
-    private static String apiKey;
-    @Value("${app.mailjet.apiSecretKey}")
-    private static String apiSecretKey;
-
 //    public static void sendMail(Mail mail) throws IOException {
 //        log.info("MAIL SENDING IS CURRENTLY DISABLED");
 ////        SendGrid sg = new SendGrid(sendGridApiKey);
@@ -34,11 +29,9 @@ public class MailUtil {
 //    }
 
     public static void sendMail(TransactionalEmail mail) throws MailjetException {
-        log.info("api key is " + apiKey);
-        log.info("api secret key is " + apiSecretKey);
         ClientOptions options = ClientOptions.builder()
-                .apiKey(apiKey)
-                .apiSecretKey(apiSecretKey)
+                .apiKey(System.getenv("MAILJET_API_KEY"))
+                .apiSecretKey(System.getenv("MAILJET_API_SECRET_KEY"))
                 .build();
 
         MailjetClient client = new MailjetClient(options);
