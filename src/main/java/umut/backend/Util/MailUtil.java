@@ -34,6 +34,8 @@ public class MailUtil {
 //    }
 
     public static void sendMail(TransactionalEmail mail) throws MailjetException {
+        log.info("api key is " + apiKey);
+        log.info("api secret key is " + apiSecretKey);
         ClientOptions options = ClientOptions.builder()
                 .apiKey(apiKey)
                 .apiSecretKey(apiSecretKey)
