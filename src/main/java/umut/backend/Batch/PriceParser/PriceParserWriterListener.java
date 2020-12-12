@@ -16,6 +16,7 @@ import umut.backend.Entities.ProductPrice;
 import umut.backend.Util.MailUtil;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -86,14 +87,14 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
         System.out.println("Writing Complete");
     }
 
-    private void deleteBatchRecords() {
+    @Transactional
+    public void deleteBatchRecords() {
         log.info("DELETING BATCH RECORDS");
         entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
         entityManager.createNativeQuery("delete from batch_step_execution;").executeUpdate();
         entityManager.createNativeQuery("delete from batch_job_execution_params;").executeUpdate();
         entityManager.createNativeQuery("delete from batch_job_execution_context;").executeUpdate();
         entityManager.createNativeQuery("delete from batch_job_execution;").executeUpdate();
-        entityManager.getTransaction().commit();
         log.info("DELETED ALL BATCH RECORDS");
     }
 
