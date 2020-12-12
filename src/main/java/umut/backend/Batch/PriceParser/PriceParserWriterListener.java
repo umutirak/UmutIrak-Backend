@@ -25,11 +25,6 @@ import java.util.List;
 @Slf4j
 public class PriceParserWriterListener implements ItemWriteListener<CustomProductModel> {
 
-    private final EntityManager entityManager;
-
-    public PriceParserWriterListener(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     private enum HtmlTableColumns {
         PRODUCT_NAME("Product Name"),
@@ -62,7 +57,6 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
 
     @Override
     public void afterWrite(List<? extends CustomProductModel> list) {
-        deleteBatchRecords();
         StringBuilder mailBuilder = new StringBuilder();
         for (CustomProductModel item : list) {
             ProductPrice lastPrice = item.getLastPrice();
@@ -85,17 +79,6 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
         sendMail(mailContent);
 
         System.out.println("Writing Complete");
-    }
-
-    @Transactional
-    public void deleteBatchRecords() {
-        log.info("DELETING BATCH RECORDS");
-        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_step_execution;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_job_execution_params;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_job_execution_context;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_job_execution;").executeUpdate();
-        log.info("DELETED ALL BATCH RECORDS");
     }
 
     @Override
