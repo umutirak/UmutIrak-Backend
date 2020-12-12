@@ -28,11 +28,11 @@ public class BatchRunner {
         jobLauncher.run(priceParserJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
     }
 
-    @Scheduled(initialDelay = 1000 * 3, fixedDelayString = "${app.ps5finder.fixedDelay}")
-    public void performPs5Finder() throws Exception {
-        log.info("Starting PS5 Finder");
-        jobLauncher.run(ps5FinderJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
-    }
+//    @Scheduled(initialDelay = 1000 * 3, fixedDelayString = "${app.ps5finder.fixedDelay}")
+//    public void performPs5Finder() throws Exception {
+//        log.info("Starting PS5 Finder");
+//        jobLauncher.run(ps5FinderJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
+//    }
 
 
 }
