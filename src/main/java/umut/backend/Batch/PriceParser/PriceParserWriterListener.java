@@ -61,6 +61,7 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
 
     @Override
     public void afterWrite(List<? extends CustomProductModel> list) {
+        deleteBatchRecords();
         StringBuilder mailBuilder = new StringBuilder();
         for (CustomProductModel item : list) {
             ProductPrice lastPrice = item.getLastPrice();
@@ -81,16 +82,17 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
         }
         String mailContent = createTableHeader() + mailBuilder.toString() + "</table>";
         sendMail(mailContent);
-        deleteBatchRecords();
+
         System.out.println("Writing Complete");
     }
 
     private void deleteBatchRecords() {
+        log.info("DELETING BATCH RECORDS");
         entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
-        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_step_execution;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_job_execution_params;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_job_execution_context;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_job_execution;").executeUpdate();
         entityManager.getTransaction().commit();
         log.info("DELETED ALL BATCH RECORDS");
     }
