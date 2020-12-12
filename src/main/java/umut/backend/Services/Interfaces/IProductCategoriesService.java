@@ -14,5 +14,7 @@ public interface IProductCategoriesService {
 
     UUID addCategory(ProductCategoryDTO dto);
 
+    void addCategoryByCategoryUrl(String categoryUrl);
+
     List<ProductCategoryDTO> findAllProductCategories();
 }

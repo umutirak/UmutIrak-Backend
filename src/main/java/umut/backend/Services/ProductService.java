@@ -1,14 +1,11 @@
 package umut.backend.Services;
 
 import lombok.AllArgsConstructor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
 import umut.backend.DTOs.ProductPriceDTO;
 import umut.backend.Entities.Product;
@@ -16,7 +13,6 @@ import umut.backend.Mapper.AutoMapper;
 import umut.backend.Repository.ProductsRepository;
 import umut.backend.Services.Interfaces.IProductService;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -41,33 +37,16 @@ public class ProductService implements IProductService {
     @Transactional
     @Override
     public void addProductsByCategoryUrl(String categoryUrl) {
-        Document document;
-        try {
-            document = Jsoup.connect(categoryUrl)
-                    .get();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        String ulClass = "product-list results-container do-flex ";
-        String productCategoryName = document.select("span[itemprop]")
-                .last()
-                .text();
-
-        UUID categoryId = productCategoriesService.getProductCategoryIdByName(productCategoryName);
-        if (categoryId == null) {
-            ProductCategoryDTO categoryDto = new ProductCategoryDTO();
-            categoryDto.setName(productCategoryName);
-            categoryDto.setUrl(categoryUrl);
-            categoryId = productCategoriesService.addCategory(categoryDto);
-        }
-
-        Elements elementList = document.getElementsByClass(ulClass)
-                .first()
-                .children();
-        List<ProductPriceDTO> productPrices = findProductPricesByHtmlElements(elementList, categoryId);
-        productPricesService.addProductPrices(productPrices);
+//        AbstractMap.SimpleEntry<String, Document> categoryEntry = ParseUtil.getProductCategoryNameFromUrlWithDocument(categoryUrl);
+//        String ulClass = "product-list results-container do-flex ";
+//
+//        UUID categoryId = productCategoriesService.getProductCategoryIdByName(categoryEntry.getKey());
+//
+//        Elements elementList = document.getElementsByClass(ulClass)
+//                .first()
+//                .children();
+//        List<ProductPriceDTO> productPrices = findProductPricesByHtmlElements(elementList, categoryId);
+//        productPricesService.addProductPrices(productPrices);
     }
 
     @Override
@@ -99,8 +78,7 @@ public class ProductService implements IProductService {
         List<ProductPriceDTO> productPrices = new ArrayList<>();
 
         for (Element element : elementList) {
-            if (!"li".equals(element.tag()
-                    .getName())) {
+            if (!"li".equals(element.tag().getName())) {
                 continue;
             }
             String productUrl = "https://www.hepsiburada.com" + element.select("a[href]")

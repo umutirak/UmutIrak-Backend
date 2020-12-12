@@ -9,5 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class BackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
+        System.out.println(System.getenv("JPA_URL"));
+        System.out.println(System.getenv("JPA_USERNAME"));
+        System.out.println(System.getenv("JPA_PASSWORD"));
     }
 }
