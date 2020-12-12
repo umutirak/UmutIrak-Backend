@@ -6,6 +6,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 @Slf4j
 public class BatchRunner {
 
+    private final JdbcTemplate jdbcTemplate;
     private final JobLauncher jobLauncher;
     @Qualifier("priceParserJob")
     private final Job priceParserJob;
@@ -34,5 +36,16 @@ public class BatchRunner {
         jobLauncher.run(ps5FinderJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
     }
 
+
+    @Scheduled(cron = "0 1 20 ? * * *")
+    public void purgeBatchData() {
+        log.info("STARTING TO PURGE BATCH DATA");
+        jdbcTemplate.execute("delete from batch_step_execution_context;");
+        jdbcTemplate.execute("delete from batch_step_execution;");
+        jdbcTemplate.execute("delete from batch_job_execution_params;");
+        jdbcTemplate.execute("delete from batch_job_execution_context;");
+        jdbcTemplate.execute("delete from batch_job_execution;");
+        log.info("BATCH DATA PURGED");
+    }
 
 }
