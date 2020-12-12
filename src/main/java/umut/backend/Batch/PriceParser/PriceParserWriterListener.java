@@ -7,6 +7,7 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,12 +15,20 @@ import umut.backend.Entities.Product;
 import umut.backend.Entities.ProductPrice;
 import umut.backend.Util.MailUtil;
 
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Component
+@Slf4j
 public class PriceParserWriterListener implements ItemWriteListener<CustomProductModel> {
+
+    private final EntityManager entityManager;
+
+    public PriceParserWriterListener(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     private enum HtmlTableColumns {
         PRODUCT_NAME("Product Name"),
@@ -72,7 +81,18 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
         }
         String mailContent = createTableHeader() + mailBuilder.toString() + "</table>";
         sendMail(mailContent);
+        deleteBatchRecords();
         System.out.println("Writing Complete");
+    }
+
+    private void deleteBatchRecords() {
+        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
+        entityManager.createNativeQuery("delete from batch_step_execution_context;").executeUpdate();
+        entityManager.getTransaction().commit();
+        log.info("DELETED ALL BATCH RECORDS");
     }
 
     @Override
