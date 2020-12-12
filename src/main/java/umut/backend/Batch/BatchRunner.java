@@ -37,7 +37,7 @@ public class BatchRunner {
     }
 
 
-    @Scheduled(cron = "0 1 20 ? * * *")
+    @Scheduled(cron = "0 1 20 * * *")
     public void purgeBatchData() {
         log.info("STARTING TO PURGE BATCH DATA");
         jdbcTemplate.execute("delete from batch_step_execution_context;");
