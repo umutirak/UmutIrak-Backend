@@ -21,7 +21,7 @@ public class Ps5FinderReader implements ItemReader<ProductAvailability> {
     static List<AmazonWebsite> websites = new ArrayList<>();
 
     static {
-        websites.add(new AmazonItaly());
+        //websites.add(new AmazonItaly());
         websites.add(new AmazonFrance());
         websites.add(new AmazonSpain());
     }
