@@ -1,6 +1,7 @@
 package umut.backend.Entities;
 
 import lombok.Data;
+import org.hibernate.annotations.Type;
 import umut.backend.Enums.UserRole;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Data
 public class Role {
     @Id
+    @Type(type = "uuid-char")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;

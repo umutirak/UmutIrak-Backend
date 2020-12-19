@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
-import umut.backend.Requests.RequestAddProductsByCategoryUrl;
+import umut.backend.Entities.Product;
 import umut.backend.Services.Interfaces.IProductCategoriesService;
 import umut.backend.Services.Interfaces.IProductService;
 
@@ -26,12 +26,6 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<ProductDTO> products = productService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
-    }
-
-    @PostMapping("/createByUrl")
-    public ResponseEntity<List<ProductDTO>> addProductsByCategoryUrl(@RequestBody RequestAddProductsByCategoryUrl request) {
-        productService.addProductsByCategoryUrl(request.getCategoryUrl());
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{productId}")

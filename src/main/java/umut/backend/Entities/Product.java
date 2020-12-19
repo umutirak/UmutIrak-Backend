@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Table(name = "PRODUCTS")
 public class Product {
     @Id
+    @Type(type = "uuid-char")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
@@ -22,6 +24,7 @@ public class Product {
     private String url;
     private String imageUrl;
     @Column(name = "category_id")
+    @Type(type = "uuid-char")
     private UUID categoryId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -16,10 +17,12 @@ import java.util.UUID;
 @Table(name = "PRODUCT_PRICES")
 public class ProductPrice {
     @Id
+    @Type(type = "uuid-char")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
     @Column(name = "product_id")
+    @Type(type = "uuid-char")
     private UUID productId;
     private BigDecimal price;
     private Date createDate;
