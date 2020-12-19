@@ -37,15 +37,15 @@ public class BatchRunner {
 //    }
 
 
-    @Scheduled(cron = "0 0 10,17 * * *")
-    public void purgeBatchData() {
-        log.info("STARTING TO PURGE BATCH DATA");
-        jdbcTemplate.execute("delete from batch_step_execution_context;");
-        jdbcTemplate.execute("delete from batch_step_execution;");
-        jdbcTemplate.execute("delete from batch_job_execution_params;");
-        jdbcTemplate.execute("delete from batch_job_execution_context;");
-        jdbcTemplate.execute("delete from batch_job_execution;");
-        log.info("BATCH DATA PURGED");
-    }
+//    @Scheduled(cron = "0 0 10,17 * * *")
+//    public void purgeBatchData() {
+//        log.info("STARTING TO PURGE BATCH DATA");
+//        jdbcTemplate.execute("delete from batch_step_execution_context;");
+//        jdbcTemplate.execute("delete from batch_step_execution;");
+//        jdbcTemplate.execute("delete from batch_job_execution_params;");
+//        jdbcTemplate.execute("delete from batch_job_execution_context;");
+//        jdbcTemplate.execute("delete from batch_job_execution;");
+//        log.info("BATCH DATA PURGED");
+//    }
 
 }
