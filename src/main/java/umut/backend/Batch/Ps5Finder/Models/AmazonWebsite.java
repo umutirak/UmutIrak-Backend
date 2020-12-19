@@ -22,12 +22,21 @@ public abstract class AmazonWebsite {
         log.info("Getting product availablity on " + getAmazonRegion());
         ProductAvailability availability = new ProductAvailability();
         availability.setRegion(getAmazonRegion());
+        availability.setDigitalAvailable(getAvailability(true));
+        availability.setNonDigitalAvailable(getAvailability(false));
+        return availability;
+    }
+
+    private boolean getAvailability(boolean isDigitalAvailability) {
+        OkHttpClient httpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(isDigitalAvailability ? getDigitalProductUrl() : getNonDigitalProductUrl())
+                .build();
         try {
-            OkHttpClient httpClient = new OkHttpClient();
-            Request request = new Request.Builder().url(getDigitalProductUrl()).build();
             Response response = httpClient.newCall(request).execute();
-            if (response.body() != null){
-                String digitalAvailability = Jsoup.parse(response.body().string())
+            log.info("Response code is " + response.code());
+            if (response.code() == 200 && response.body() != null) {
+                String body = response.body().string();
+                String digitalAvailability = Jsoup.parse(body)
                         .getElementById("availability")
                         .tagName("span")
                         .children()
@@ -35,32 +44,17 @@ public abstract class AmazonWebsite {
                         .text();
 
                 if (!getTranslatedOutOfStockMessage().equals(digitalAvailability)) {
-                    availability.setDigitalAvailable(true);
+                    return true;
                 } else {
-                    System.out.println("Digital PS5 not available in " + getAmazonRegion().name());
+                    log.info((isDigitalAvailability ? "" : "Non ") + "Digital PS5 not available in " + getAmazonRegion()
+                            .name());
                 }
             }
-
-            Request nonDigitalRequest = new Request.Builder().url(getNonDigitalProductUrl()).build();
-            Response nonDigitalResponse = httpClient.newCall(nonDigitalRequest).execute();
-            if (nonDigitalResponse.body() != null){
-                String nonDigitalAvailability = Jsoup.parse(nonDigitalResponse.body().string())
-                        .getElementById("availability")
-                        .tagName("span")
-                        .children()
-                        .first()
-                        .text();
-                if (!getTranslatedOutOfStockMessage().equals(nonDigitalAvailability)) {
-                    availability.setNonDigitalAvailable(true);
-                } else {
-                    System.out.println("Non Digital PS5 not available in " + getAmazonRegion().name());
-                }
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
 
-        return availability;
+        return false;
     }
 }
