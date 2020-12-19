@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.SQLException;
-
 @RestController
 @RequestMapping("/heroku")
 @CrossOrigin
@@ -15,7 +13,7 @@ import java.sql.SQLException;
 public class HerokuController {
 
     @GetMapping
-    public void heroku() throws SQLException {
+    public void heroku() {
         log.info("Heroku wake up.");
     }
 }
