@@ -3,6 +3,7 @@ package umut.backend.Services;
 import lombok.AllArgsConstructor;
 import umut.backend.DTOs.UserDTO;
 import umut.backend.Entities.AppUser;
+import umut.backend.Entities.Role;
 import umut.backend.Enums.UserRole;
 import umut.backend.Mapper.AutoMapper;
 import umut.backend.Repository.RolesRepository;
@@ -19,6 +20,7 @@ import umut.backend.Services.Interfaces.ICustomUserDetailsService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,8 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService, ICustomUser
         }
         List<SimpleGrantedAuthority> authorities = appUser.getUserRoles()
                 .stream()
-                .map(q -> new SimpleGrantedAuthority(q.getName()
-                        .name()))
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
         return new User(appUser.getUsername(), appUser.getPassword(), authorities);
     }
@@ -53,5 +54,14 @@ public class CustomUserDetailsService implements UserDetailsService, ICustomUser
         AppUser user = mapper.toAppUser(request);
         user.setUserRoles(Collections.singleton(rolesRepository.findByName(UserRole.USER)));
         return mapper.toUserDTO(userRepository.save(user));
+    }
+
+    @Override
+    public Set<Role> findUserRoles(String username) {
+        AppUser appUser = userRepository.findByUsername(username);
+        if (appUser == null) {
+            throw new UsernameNotFoundException("User Not Found");
+        }
+        return appUser.getUserRoles();
     }
 }

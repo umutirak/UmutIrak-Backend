@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Component
@@ -141,6 +142,6 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
     }
 
     private static BigDecimal percentage(BigDecimal base) {
-        return base.multiply(PERCENTAGE_AMOUNT).divide(ONE_HUNDRED, BigDecimal.ROUND_HALF_UP);
+        return base.multiply(PERCENTAGE_AMOUNT).divide(ONE_HUNDRED, RoundingMode.HALF_UP);
     }
 }

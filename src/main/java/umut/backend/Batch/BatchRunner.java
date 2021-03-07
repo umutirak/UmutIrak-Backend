@@ -24,11 +24,11 @@ public class BatchRunner {
     @Qualifier("ps5FinderJob")
     private final Job ps5FinderJob;
 
-    @Scheduled(initialDelay = 1000 * 2, fixedDelayString = "${app.priceParser.fixedDelay}")
-    public void performPriceParser() throws Exception {
-        log.info("Starting Price Parser");
-        jobLauncher.run(priceParserJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
-    }
+//    @Scheduled(initialDelay = 1000 * 2, fixedDelayString = "${app.priceParser.fixedDelay}")
+//    public void performPriceParser() throws Exception {
+//        log.info("Starting Price Parser");
+//        jobLauncher.run(priceParserJob, new JobParametersBuilder().addDate("launchDate", new Date()).toJobParameters());
+//    }
 
 //    @Scheduled(initialDelay = 1000 * 3, fixedDelayString = "${app.ps5finder.fixedDelay}")
 //    public void performPs5Finder() throws Exception {

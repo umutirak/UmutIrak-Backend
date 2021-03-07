@@ -31,7 +31,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductDTO findProductAllPriceDataById(UUID productId) {
         Optional<Product> optionalProduct = productsRepository.findById(productId);
-        if (!optionalProduct.isPresent()) return null;
+        if (optionalProduct.isEmpty()) return null;
         Product product = optionalProduct.get();
 
         return mapper.toProductDTO(product);
@@ -39,17 +39,11 @@ public class ProductService implements IProductService {
 
     @Override
     public List<ProductDTO> findProductsByCategoryId(UUID categoryId, Integer page) {
-        List<Product> products;
-        if (page == null) {
-            products = productsRepository.findByCategoryId(categoryId);
-        } else {
-            products = productsRepository.findByCategoryId(categoryId, PageRequest.of(page, 10));
-        }
+        List<Product> products = page == null ? productsRepository.findByCategoryId(categoryId) : productsRepository.findByCategoryId(categoryId, PageRequest.of(page, 10));
 
         return products.stream()
-                .map(product -> mapper.toProductDTO(product, productPricesService.getLatestProductPriceByProductId(product
-                        .getId())))
-                .collect(Collectors.toList());
+                       .map(product -> mapper.toProductDTO(product, productPricesService.getLatestProductPriceByProductId(product.getId())))
+                       .collect(Collectors.toList());
     }
 
 }
