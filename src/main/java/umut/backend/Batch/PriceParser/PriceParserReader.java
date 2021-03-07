@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.http.HttpException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,10 +18,14 @@ import umut.backend.Entities.ProductPrice;
 import umut.backend.Repository.ProductCategoriesRepository;
 import umut.backend.Repository.ProductPricesRepository;
 import umut.backend.Repository.ProductsRepository;
+import umut.backend.Util.Parser.HtmlParserFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,6 +67,12 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
         return data;
     }
 
+    public void initialize2(String categoryUrl) throws URISyntaxException, ParseException, HttpException {
+        var uri = new URI(categoryUrl);
+        var website = HtmlParserFactory.Website.hostOf(uri.getHost());
+        HtmlParserFactory.getHtmlParser(website).parse(uri);
+    }
+
     public void initialize(String categoryUrl) {
         List<CustomProductModel> productPrices = new ArrayList<>();
         int index = 1;
@@ -97,8 +108,8 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
             UUID categoryId = productCategory.getId();
 
             Elements elementList = document.getElementsByClass(ulClass)
-                    .first()
-                    .children();
+                                           .first()
+                                           .children();
             productPrices.addAll(findProductPricesByHtmlElements(elementList, categoryId));
             index++;
         }
@@ -127,8 +138,7 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
 
             String priceText;
             if (!priceElement.isEmpty()) {
-                priceText = priceElement.first()
-                        .text();
+                priceText = priceElement.first().text();
             } else {
                 Element priceValueElement = productAttributes.getElementsByClass("price-value").first();
                 if (priceValueElement == null) continue;
@@ -147,10 +157,10 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
             Product existingProduct = productsRepository.findByUrl(productUrl);
             if (existingProduct == null) {
                 String imageUrl = productInfo.first()
-                        .getElementsByClass("carousel-lazy-item")
-                        .select("img[data-src]")
-                        .first()
-                        .attr("data-src");
+                                             .getElementsByClass("carousel-lazy-item")
+                                             .select("img[data-src]")
+                                             .first()
+                                             .attr("data-src");
 
 
                 String productName = productAttributes.getElementsByClass("product-title title").first().attr("title");

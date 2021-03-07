@@ -1,8 +1,26 @@
 package umut.backend.Util.Parser;
 
-public class HtmlParserFactory {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    enum Website {
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class HtmlParserFactory {
+    private static final Map<Website, WebsiteParser> serviceCache = new HashMap<>();
+
+    @Autowired
+    public void initServiceCache(List<WebsiteParser> services) {
+        services.forEach(service -> serviceCache.put(service.getWebsite(), service));
+    }
+
+    public enum Website {
         HEPSIBURADA("www.hepsiburada.com"),
         AMAZON("www.amazon.com.tr"),
         N11("www.n11.com"),
@@ -14,21 +32,15 @@ public class HtmlParserFactory {
             this.host = host;
         }
 
-        static Website hostOf(String host) {
-            for (Website website : Website.values()) {
-                if (website.host.equals(host))
-                    return website;
-            }
-            throw new IllegalArgumentException("Website Not Found !");
+        public static Website hostOf(String host) {
+            return Arrays.stream(Website.values())
+                         .filter(website -> website.host.equals(host))
+                         .findFirst()
+                         .orElseThrow(() -> new IllegalArgumentException("Website Not Found !"));
         }
     }
 
     public static WebsiteParser getHtmlParser(Website website) {
-        return switch (website) {
-            case HEPSIBURADA -> new HepsiBurada();
-            case AMAZON -> new Amazon();
-            case N11 -> new N11();
-            case TRENDYOL -> new Trendyol();
-        };
+        return serviceCache.get(website);
     }
 }

@@ -35,4 +35,8 @@ public interface AutoMapper {
 
     ProductPrice toProductPrice(ProductPriceDTO dto);
 
+    Website toWebsite(WebsiteDTO dto);
+
+    WebsiteDTO toWebsiteDTO(Website website);
+
 }

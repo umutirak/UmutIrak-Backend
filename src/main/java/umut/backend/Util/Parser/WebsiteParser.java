@@ -1,7 +1,13 @@
 package umut.backend.Util.Parser;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpException;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import umut.backend.Entities.Product;
+import umut.backend.Util.Parser.Websites.Amazon;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -12,8 +18,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public abstract class WebsiteParser {
-    List<Product> parse(URI categoryUrl) throws IOException, ParseException {
+    public List<Product> parse(URI categoryUrl) throws ParseException, HttpException {
         var productList = new ArrayList<Product>();
         int pageNumber = 1;
         while (true) {
@@ -23,25 +30,30 @@ public abstract class WebsiteParser {
                 connection = connection.userAgent("User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
             }
 
-            var document = connection.get();
+            Document document;
+            try {
+                document = connection.get();
+            } catch (IOException e) {
+                if (e instanceof HttpStatusException) {
+                    break;
+                }
+                throw new HttpException("An Error Occurred");
+            }
             if (!document.baseUri().equals(currentUrl) && pageNumber != 1)
                 break;
 
-            var productListKeyValue = getProductListAttributeAndValue();
-            var productListElements = document.getElementsByAttributeValue(productListKeyValue.getKey(), productListKeyValue.getValue());
-            if (productListElements.isEmpty())
+            var productsGroupElements = document.select(getProductListCssQuery());
+            if (productsGroupElements.isEmpty())
                 break;
 
-            var productKeyValue = getProductFilterAttributeAndValue();
-            var productElements = productListElements.first().getElementsByAttributeValue(productKeyValue.getKey(), productKeyValue.getValue());
-            if (productElements.isEmpty())
+            var productsElements = productsGroupElements.select(getProductsCssQuery());
+            if (productsElements.isEmpty())
                 break;
 
-            for (Element element : productElements) {
-                var product = parseProductFromElement(element, categoryUrl.getHost());
+            for (Element productElement : productsElements) {
+                var product = parseProductFromElement(productElement, categoryUrl.getHost());
                 productList.add(product);
             }
-
             pageNumber++;
         }
 
@@ -56,55 +68,42 @@ public abstract class WebsiteParser {
     }
 
     private Product parseProductFromElement(Element element, String host) throws ParseException {
-        var productUrl = parseProductUrl(element, host);
-        var productName = parseProductName(element);
+        var productName = element.select(getProductNameCssQuery()).text();
         var productPrice = parseProductPrice(element);
+        var productImageUrl = element.select(getProductImageCssQuery()).attr(getProductImageAttributeName());
+        var productUrl = parseProductUrl(element, host);
 
         var product = new Product();
-        product.setProductName(productName);
-        product.setProductPrice(productPrice);
-        product.setProductUrl(productUrl);
+//        product.setProductName(productName);
+//        product.setProductPrice(productPrice);
+//        product.setProductUrl(productUrl);
+//        product.setProductImageUrl(productImageUrl);
 
         return product;
     }
 
-    private String parseProductUrl(Element element, String host) {
-        var hrefKeyValue = getProductHrefAttributeAndValue();
-        var productUrlElement = element.getElementsByAttributeValue(hrefKeyValue.getKey(), hrefKeyValue.getValue()).first();
-        String productUrl = productUrlElement.attr("href");
-        if (host.equals(HtmlParserFactory.Website.TRENDYOL.host))
-            productUrl = productUrlElement.getElementsByTag("a").attr("href");
+    protected String getProductImageAttributeName() {
+        return "src";
+    }
 
+    private String parseProductUrl(Element element, String host) {
+        var productUrl = element.select(getProductUrlCssQuery()).attr("href");
         if (!productUrl.startsWith("http"))
             productUrl = "https://" + host + productUrl;
         return productUrl;
     }
 
-    private String parseProductName(Element element) {
-        var possibleNameKeyValues = getProductNameAttributeAndValue();
-        String productName = null;
-        for (KeyValuePair nameKeyValue : possibleNameKeyValues) {
-            productName = element.getElementsByAttributeValue(nameKeyValue.getKey(), nameKeyValue.getValue()).text();
-            if (!productName.isEmpty())
-                break;
-        }
-
-        return productName;
-    }
-
     private BigDecimal parseProductPrice(Element element) throws ParseException {
-        var possiblePriceKeyValues = getPossibleProductPriceAttributeAndValues();
         BigDecimal productPrice = null;
-        for (KeyValuePair priceKeyValue : possiblePriceKeyValues) {
-            var keyValuePrice = element.getElementsByAttributeValue(priceKeyValue.getKey(), priceKeyValue.getValue()).text();
-            if (keyValuePrice.isEmpty())
+        var cssQueries = getProductPriceCssQueries();
+        for (String cssQuery : cssQueries) {
+            var price = element.select(cssQuery).text();
+            if (price.isEmpty())
                 continue;
 
-            keyValuePrice = keyValuePrice.split(" ")[0];
-            var price = (BigDecimal) getDecimalFormatter().parse(keyValuePrice);
-            if (productPrice == null || productPrice.compareTo(price) > 0)
-                productPrice = price;
-
+            price = price.split(" ")[0];
+            productPrice = (BigDecimal) getDecimalFormatter().parse(price);
+            break;
         }
 
         return productPrice;
@@ -121,16 +120,19 @@ public abstract class WebsiteParser {
         return df;
     }
 
+    protected abstract String getProductListCssQuery();
 
-    abstract KeyValuePair getProductListAttributeAndValue();
+    protected abstract List<String> getProductPriceCssQueries();
 
-    abstract List<KeyValuePair> getProductNameAttributeAndValue();
+    protected abstract String getProductUrlCssQuery();
 
-    abstract KeyValuePair getProductHrefAttributeAndValue();
+    protected abstract String getProductImageCssQuery();
 
-    abstract KeyValuePair getProductFilterAttributeAndValue();
+    protected abstract String getProductNameCssQuery();
 
-    abstract List<KeyValuePair> getPossibleProductPriceAttributeAndValues();
+    protected abstract String getProductsCssQuery();
 
-    abstract String getPageNumberQuery();
+    protected abstract String getPageNumberQuery();
+
+    protected abstract HtmlParserFactory.Website getWebsite();
 }

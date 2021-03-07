@@ -1,21 +1,17 @@
 package umut.backend.Entities;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
-@Table(name = "PRODUCT_CATEGORIES")
-public class ProductCategory {
+@Table(name = "WEBSITES")
+@Data
+public class Website {
     @Id
     @Type(type = "uuid-char")
     @GeneratedValue(generator = "uuid2")
@@ -24,14 +20,6 @@ public class ProductCategory {
     private String name;
     private String url;
     private Date createDate;
-    private String subPath;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "website_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @Setter(AccessLevel.NONE)
-    private Website website;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "productCategory")
-    private List<Product> products;
 
     @PrePersist
     public void prePersist() {

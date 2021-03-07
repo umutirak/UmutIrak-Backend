@@ -11,4 +11,6 @@ public interface ProductCategoriesRepository extends JpaRepository<ProductCatego
     ProductCategory findByName(String name);
 
     ProductCategory findBySubPath(String subPath);
+
+    ProductCategory findByUrl(String url);
 }

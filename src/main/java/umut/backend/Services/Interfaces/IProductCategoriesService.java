@@ -10,6 +10,8 @@ public interface IProductCategoriesService {
 
     ProductCategoryDTO getProductCategoryBySubPath(String subPath);
 
+    ProductCategoryDTO getProductCategoryByUrl(String url);
+
     UUID getProductCategoryIdByName(String categoryName);
 
     UUID addCategory(ProductCategoryDTO dto);

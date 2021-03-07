@@ -6,6 +6,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.lang.Nullable;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.Entities.ProductCategory;
 import umut.backend.Mapper.AutoMapper;
@@ -25,30 +26,41 @@ public class ProductCategoriesService implements IProductCategoriesService {
     private final ProductCategoriesRepository categoriesRepository;
     private final AutoMapper mapper;
 
+    @Nullable
     @Override
     public ProductCategoryDTO getProductCategoryByName(String categoryName) {
-        ProductCategory category = categoriesRepository.findByName(categoryName);
+        var category = categoriesRepository.findByName(categoryName);
         if (category == null) return null;
         return mapper.toProductCategoryDTO(category);
     }
 
+    @Nullable
     @Override
     public ProductCategoryDTO getProductCategoryBySubPath(String subPath) {
-        ProductCategory category = categoriesRepository.findBySubPath(subPath);
+        var category = categoriesRepository.findBySubPath(subPath);
         if (category == null) return null;
         return mapper.toProductCategoryDTO(category);
     }
 
+    @Nullable
+    @Override
+    public ProductCategoryDTO getProductCategoryByUrl(String url) {
+        var category = categoriesRepository.findByUrl(url);
+        if (category == null) return null;
+        return mapper.toProductCategoryDTO(category);
+    }
+
+    @Nullable
     @Override
     public UUID getProductCategoryIdByName(String categoryName) {
-        ProductCategory category = categoriesRepository.findByName(categoryName);
+        var category = categoriesRepository.findByName(categoryName);
         if (category == null) return null;
         return category.getId();
     }
 
     @Override
     public UUID addCategory(ProductCategoryDTO dto) {
-        ProductCategory savedCategory = categoriesRepository.save(mapper.toProductCategory(dto));
+        var savedCategory = categoriesRepository.save(mapper.toProductCategory(dto));
         return savedCategory.getId();
     }
 
@@ -70,7 +82,7 @@ public class ProductCategoriesService implements IProductCategoriesService {
         if (category != null)
             throw new IllegalArgumentException("Category Already Exists");
 
-        ProductCategory newCategory = new ProductCategory();
+        var newCategory = new ProductCategory();
         newCategory.setName(categoryName);
         newCategory.setUrl(categoryUrl);
         newCategory.setSubPath(categoryName.toLowerCase().replace(" ", "-"));

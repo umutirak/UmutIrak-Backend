@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
-import umut.backend.Entities.Product;
 import umut.backend.Services.Interfaces.IProductCategoriesService;
 import umut.backend.Services.Interfaces.IProductService;
 
