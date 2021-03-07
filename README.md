@@ -8,5 +8,4 @@ Spotify Authentication API
 
 User Login/Registration API 
 
-
-Price Scraper Batch : https://github.com/umutirak/PriceParserBatch
+Html Parser
