@@ -90,6 +90,6 @@ public class ProductCategoriesService implements IProductCategoriesService {
 
     @Override
     public List<ProductCategoryDTO> findAllProductCategories() {
-        return categoriesRepository.findAll().stream().map(mapper::fromProductCategory).collect(Collectors.toList());
+        return categoriesRepository.findAll().stream().map(mapper::fromProductCategoryWithoutProducts).collect(Collectors.toList());
     }
 }
