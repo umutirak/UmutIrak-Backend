@@ -45,6 +45,11 @@ public class Amazon extends WebsiteParser {
     }
 
     @Override
+    protected String getProductCategoryNameCssQuery() {
+        return "li.a-spacing-micro.s-navigation-indent-1";
+    }
+
+    @Override
     protected HtmlParserFactory.Website getWebsite() {
         return HtmlParserFactory.Website.AMAZON;
     }

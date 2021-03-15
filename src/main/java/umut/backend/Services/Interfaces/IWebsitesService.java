@@ -2,8 +2,15 @@ package umut.backend.Services.Interfaces;
 
 import umut.backend.DTOs.WebsiteDTO;
 
-public interface IWebsitesService {
-    void addWebsite(WebsiteDTO websiteDTO);
+import java.net.URISyntaxException;
+import java.util.UUID;
 
-    WebsiteDTO findWebsiteByUrl(String url);
+public interface IWebsitesService {
+    WebsiteDTO addWebsite(String websiteUrl) throws URISyntaxException;
+
+    WebsiteDTO getWebsiteByUrl(String websiteUrl) throws URISyntaxException;
+
+    WebsiteDTO getWebsiteById(UUID id);
+
+    WebsiteDTO getWebsiteByName(String name);
 }

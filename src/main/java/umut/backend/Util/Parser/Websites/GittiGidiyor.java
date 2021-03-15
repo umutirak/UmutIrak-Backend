@@ -1,59 +1,56 @@
 package umut.backend.Util.Parser.Websites;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import umut.backend.Util.Parser.HtmlParserFactory;
 import umut.backend.Util.Parser.WebsiteParser;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class Trendyol extends WebsiteParser {
-
+public class GittiGidiyor extends WebsiteParser {
     @Override
     protected String getProductListCssQuery() {
-        return "div.prdct-cntnr-wrppr";
+        return "ul.catalog-view.clearfix.products-container";
     }
 
     @Override
     protected List<String> getProductPriceCssQueries() {
-        return Collections.singletonList("div.prc-box-sllng");
+        return Arrays.asList("p.fiyat.price-txt.robotobold.price", "p.fiyat.robotobold.price-txt");
     }
 
     @Override
     protected String getProductUrlCssQuery() {
-        return "a[href]";
+        return "a.product-link";
     }
 
     @Override
     protected String getProductImageCssQuery() {
-        return "img.p-card-img";
+        return "img.img-cont";
     }
 
     @Override
     protected String getProductNameCssQuery() {
-        return "span.prdct-desc-cntnr-name";
+        return "h3.product-title > span";
     }
 
     @Override
     protected String getProductsCssQuery() {
-        return "div.p-card-wrppr";
+        return "li.gg-uw-6.gg-w-8.gg-d-8.gg-t-8.gg-m-24.gg-mw-12.catalog-seem-cell.srp-item-list";
     }
 
     @Override
     protected String getPageNumberQuery() {
-        return "&pi=";
+        return "\\?sf=";
     }
 
     @Override
     protected String getProductCategoryNameCssQuery() {
-        return "div.dscrptn > h1";
+        return "li.last-child > span";
     }
 
     @Override
     protected HtmlParserFactory.Website getWebsite() {
-        return HtmlParserFactory.Website.TRENDYOL;
+        return HtmlParserFactory.Website.GITTIGIDIYOR;
     }
-
 }

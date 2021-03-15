@@ -5,7 +5,7 @@ import umut.backend.DTOs.UserDTO;
 import umut.backend.Entities.AppUser;
 import umut.backend.Entities.Role;
 import umut.backend.Enums.UserRole;
-import umut.backend.Mapper.AutoMapper;
+import umut.backend.Mapper.UserMapper;
 import umut.backend.Repository.RolesRepository;
 import umut.backend.Repository.UserRepository;
 import umut.backend.Requests.RequestSignUp;
@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService, ICustomUser
 
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
-    private final AutoMapper mapper;
+    private final UserMapper mapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -53,7 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService, ICustomUser
         }
         AppUser user = mapper.toAppUser(request);
         user.setUserRoles(Collections.singleton(rolesRepository.findByName(UserRole.USER)));
-        return mapper.toUserDTO(userRepository.save(user));
+        return mapper.fromAppUser(userRepository.save(user));
     }
 
     @Override

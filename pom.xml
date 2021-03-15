@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>15</java.version>
-        <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <org.projectlombok.version>1.18.16</org.projectlombok.version>
         <swagger.version>2.9.2</swagger.version>
     </properties>

@@ -1,6 +1,5 @@
 package umut.backend.Entities;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -16,20 +15,16 @@ import java.util.UUID;
 @Table(name = "PRODUCTS")
 public class Product {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
     private String name;
     private String url;
     private String imageUrl;
-    @Column(name = "category_id")
-    @Type(type = "uuid-char")
-    private UUID categoryId;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @Setter(AccessLevel.NONE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private ProductCategory productCategory;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")

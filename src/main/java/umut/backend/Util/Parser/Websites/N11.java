@@ -47,6 +47,11 @@ public class N11 extends WebsiteParser {
     }
 
     @Override
+    protected String getProductCategoryNameCssQuery() {
+        return "div.resultText > h1";
+    }
+
+    @Override
     protected String getProductImageAttributeName() {
         return "data-original";
     }

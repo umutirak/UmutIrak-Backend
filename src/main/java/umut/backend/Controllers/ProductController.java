@@ -43,7 +43,7 @@ public class ProductController {
         if (productCategory == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<ProductDTO> products = productService.findProductsByCategoryId(productCategory.getId(), Integer.valueOf(page));
+        List<ProductDTO> products = productService.findProductsByCategory(productCategory, Integer.valueOf(page));
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 

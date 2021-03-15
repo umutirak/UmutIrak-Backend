@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 public class Role {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;

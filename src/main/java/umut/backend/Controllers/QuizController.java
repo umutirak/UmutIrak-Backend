@@ -39,7 +39,11 @@ public class QuizController {
 
     @PostMapping("/addQuiz")
     public ResponseEntity<QuizDTO> addQuiz(@RequestBody RequestAddQuiz request) {
-        QuizDTO savedQuiz = quizService.addQuiz(request);
+        QuizDTO dto = new QuizDTO();
+        dto.setQuizName(request.getQuizName());
+        dto.setQuizImageUrl(request.getQuizImageUrl());
+
+        QuizDTO savedQuiz = quizService.addQuiz(dto);
         return new ResponseEntity<>(savedQuiz, HttpStatus.CREATED);
     }
 

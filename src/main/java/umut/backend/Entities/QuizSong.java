@@ -5,10 +5,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,14 +15,16 @@ import java.util.UUID;
 @Setter
 public class QuizSong {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @Type(type = "uuid-char")
-    private UUID quizId;
     private String songName;
     private String songArtist;
     private String songUrl;
     private Date createDate;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "quiz_id", referencedColumnName = "id")
+    private Quiz quiz;
 }

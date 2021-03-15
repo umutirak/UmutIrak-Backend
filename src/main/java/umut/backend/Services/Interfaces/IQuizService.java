@@ -8,7 +8,7 @@ import java.util.List;
 public interface IQuizService {
     List<QuizDTO> getAllQuizzes();
 
-    QuizDTO addQuiz(RequestAddQuiz request);
+    QuizDTO addQuiz(QuizDTO dto);
 
     List<QuizDTO> getPlayableQuizzes();
 

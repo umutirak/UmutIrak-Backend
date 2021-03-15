@@ -4,13 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.UUID;
 
 @Getter
 @Setter
 public class ProductPriceDTO {
-    private UUID productId;
+    private UUID id;
+    private ProductDTO product;
     private BigDecimal price;
-    private Date createDate;
 }

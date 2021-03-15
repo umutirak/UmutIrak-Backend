@@ -7,11 +7,12 @@ import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.Entities.ProductCategory;
-import umut.backend.Mapper.AutoMapper;
+import umut.backend.Mapper.ProductCategoriesMapper;
 import umut.backend.Repository.ProductCategoriesRepository;
-import org.springframework.stereotype.Service;
 import umut.backend.Services.Interfaces.IProductCategoriesService;
 
 import java.io.IOException;
@@ -21,47 +22,45 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
+@Transactional
 public class ProductCategoriesService implements IProductCategoriesService {
 
     private final ProductCategoriesRepository categoriesRepository;
-    private final AutoMapper mapper;
+    private final ProductCategoriesMapper mapper;
 
     @Nullable
     @Override
     public ProductCategoryDTO getProductCategoryByName(String categoryName) {
         var category = categoriesRepository.findByName(categoryName);
-        if (category == null) return null;
-        return mapper.toProductCategoryDTO(category);
+        return mapper.fromProductCategory(category);
     }
 
     @Nullable
     @Override
     public ProductCategoryDTO getProductCategoryBySubPath(String subPath) {
         var category = categoriesRepository.findBySubPath(subPath);
-        if (category == null) return null;
-        return mapper.toProductCategoryDTO(category);
+        return mapper.fromProductCategory(category);
     }
 
     @Nullable
     @Override
     public ProductCategoryDTO getProductCategoryByUrl(String url) {
         var category = categoriesRepository.findByUrl(url);
-        if (category == null) return null;
-        return mapper.toProductCategoryDTO(category);
+        return mapper.fromProductCategoryWithoutProducts(category);
     }
 
     @Nullable
     @Override
-    public UUID getProductCategoryIdByName(String categoryName) {
-        var category = categoriesRepository.findByName(categoryName);
-        if (category == null) return null;
-        return category.getId();
+    public ProductCategoryDTO getProductCategoryById(UUID id) {
+        var productCategory = categoriesRepository.findById(id);
+        return productCategory.map(mapper::fromProductCategory).orElse(null);
+
     }
 
     @Override
-    public UUID addCategory(ProductCategoryDTO dto) {
-        var savedCategory = categoriesRepository.save(mapper.toProductCategory(dto));
-        return savedCategory.getId();
+    public ProductCategoryDTO addCategory(ProductCategoryDTO dto) {
+        var productCategory = mapper.toProductCategory(dto);
+        return mapper.fromProductCategory(categoriesRepository.save(productCategory));
     }
 
     @Override
@@ -91,6 +90,6 @@ public class ProductCategoriesService implements IProductCategoriesService {
 
     @Override
     public List<ProductCategoryDTO> findAllProductCategories() {
-        return categoriesRepository.findAll().stream().map(mapper::toProductCategoryDTO).collect(Collectors.toList());
+        return categoriesRepository.findAll().stream().map(mapper::fromProductCategory).collect(Collectors.toList());
     }
 }

@@ -1,44 +1,44 @@
 package umut.backend.Util.Parser;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpException;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import umut.backend.Entities.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import umut.backend.DTOs.ProductCategoryDTO;
+import umut.backend.DTOs.ProductDTO;
+import umut.backend.DTOs.ProductPriceDTO;
+import umut.backend.DTOs.WebsiteDTO;
+import umut.backend.Services.Interfaces.IProductCategoriesService;
+import umut.backend.Services.Interfaces.IWebsitesService;
 import umut.backend.Util.Parser.Websites.Amazon;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+
 public abstract class WebsiteParser {
-    public List<Product> parse(URI categoryUrl) throws ParseException, HttpException {
-        var productList = new ArrayList<Product>();
+
+    public List<ProductDTO> parseProducts(URI categoryUrl) throws ParseException, HttpException, URISyntaxException {
+        var productList = new ArrayList<ProductDTO>();
         int pageNumber = 1;
+        var document = getDocument(categoryUrl.toString());
+        var productCategory = getProductCategory(categoryUrl, document);
+
         while (true) {
             var currentUrl = getUrlWithPageNumber(categoryUrl, pageNumber);
-            var connection = Jsoup.connect(currentUrl);
-            if (this instanceof Amazon) {
-                connection = connection.userAgent("User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
-            }
+            document = getDocument(currentUrl);
+            if (document == null)
+                break;
 
-            Document document;
-            try {
-                document = connection.get();
-            } catch (IOException e) {
-                if (e instanceof HttpStatusException) {
-                    break;
-                }
-                throw new HttpException("An Error Occurred");
-            }
             if (!document.baseUri().equals(currentUrl) && pageNumber != 1)
                 break;
 
@@ -52,12 +52,55 @@ public abstract class WebsiteParser {
 
             for (Element productElement : productsElements) {
                 var product = parseProductFromElement(productElement, categoryUrl.getHost());
+                if (product == null)
+                    continue;
+                product.setProductCategory(productCategory);
                 productList.add(product);
             }
             pageNumber++;
         }
 
+        return removeDuplicates(productList);
+    }
+
+    private List<ProductDTO> removeDuplicates(List<ProductDTO> productList) {
+        var seenItems = new HashSet<String>();
+        productList.removeIf(i -> !seenItems.add(i.getUrl()));
         return productList;
+    }
+
+    private Document getDocument(String currentUrl) throws HttpException {
+        var connection = Jsoup.connect(currentUrl);
+        if (this instanceof Amazon) {
+            connection = connection.userAgent("User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
+        }
+
+        Document document;
+        try {
+            document = connection.get();
+        } catch (IOException e) {
+            if (e instanceof HttpStatusException) {
+                return null;
+            }
+            throw new HttpException("An Error Occurred");
+        }
+
+        return document;
+    }
+
+    private ProductCategoryDTO getProductCategory(URI categoryUrl, Document document) {
+        var productCategoryName = document.select(getProductCategoryNameCssQuery()).last().text();
+
+        var websiteDTO = new WebsiteDTO();
+        websiteDTO.setUrl(categoryUrl.toString());
+
+        var productCategory = new ProductCategoryDTO();
+        productCategory.setName(productCategoryName);
+        productCategory.setUrl(categoryUrl.toString());
+        productCategory.setSubPath(productCategoryName.toLowerCase().replace(" ", "-"));
+        productCategory.setWebsite(websiteDTO);
+
+        return productCategory;
     }
 
     private String getUrlWithPageNumber(URI url, int pageNumber) {
@@ -67,29 +110,40 @@ public abstract class WebsiteParser {
         return split[0] + pageQuery + pageNumber + split[1].substring(1);
     }
 
-    private Product parseProductFromElement(Element element, String host) throws ParseException {
-        var productName = element.select(getProductNameCssQuery()).text();
+    private ProductDTO parseProductFromElement(Element element, String host) throws ParseException {
         var productPrice = parseProductPrice(element);
+        if (productPrice == null)
+            return null;
+
+        var productName = element.select(getProductNameCssQuery()).text();
         var productImageUrl = element.select(getProductImageCssQuery()).attr(getProductImageAttributeName());
         var productUrl = parseProductUrl(element, host);
 
-        var product = new Product();
-//        product.setProductName(productName);
-//        product.setProductPrice(productPrice);
-//        product.setProductUrl(productUrl);
-//        product.setProductImageUrl(productImageUrl);
+        var product = new ProductDTO();
+        product.setName(productName);
+        product.setUrl(productUrl);
+        product.setImageUrl(productImageUrl);
+
+        var productPriceDTO = new ProductPriceDTO();
+        productPriceDTO.setProduct(product);
+        productPriceDTO.setPrice(productPrice);
+        product.setProductPrices(Collections.singletonList(productPriceDTO));
 
         return product;
     }
 
-    protected String getProductImageAttributeName() {
-        return "src";
-    }
 
     private String parseProductUrl(Element element, String host) {
         var productUrl = element.select(getProductUrlCssQuery()).attr("href");
-        if (!productUrl.startsWith("http"))
-            productUrl = "https://" + host + productUrl;
+        if (productUrl.startsWith("http")) {
+            return productUrl;
+        }
+
+        var indexOf = productUrl.indexOf("www.");
+        if (indexOf != -1) {
+            productUrl = productUrl.substring(indexOf + host.length());
+        }
+        productUrl = "https://" + host + productUrl;
         return productUrl;
     }
 
@@ -102,8 +156,11 @@ public abstract class WebsiteParser {
                 continue;
 
             price = price.split(" ")[0];
-            productPrice = (BigDecimal) getDecimalFormatter().parse(price);
-            break;
+            var priceParsed = (BigDecimal) getDecimalFormatter().parse(price);
+            if (productPrice != null && priceParsed.compareTo(productPrice) > 0)
+                continue;
+
+            productPrice = priceParsed;
         }
 
         return productPrice;
@@ -120,6 +177,10 @@ public abstract class WebsiteParser {
         return df;
     }
 
+    protected String getProductImageAttributeName() {
+        return "src";
+    }
+
     protected abstract String getProductListCssQuery();
 
     protected abstract List<String> getProductPriceCssQueries();
@@ -133,6 +194,8 @@ public abstract class WebsiteParser {
     protected abstract String getProductsCssQuery();
 
     protected abstract String getPageNumberQuery();
+
+    protected abstract String getProductCategoryNameCssQuery();
 
     protected abstract HtmlParserFactory.Website getWebsite();
 }

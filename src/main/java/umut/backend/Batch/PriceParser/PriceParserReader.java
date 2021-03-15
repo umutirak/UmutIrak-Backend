@@ -12,12 +12,14 @@ import org.jsoup.select.Elements;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
+import umut.backend.DTOs.ProductDTO;
 import umut.backend.Entities.Product;
 import umut.backend.Entities.ProductCategory;
 import umut.backend.Entities.ProductPrice;
 import umut.backend.Repository.ProductCategoriesRepository;
 import umut.backend.Repository.ProductPricesRepository;
 import umut.backend.Repository.ProductsRepository;
+import umut.backend.Services.Interfaces.IProductService;
 import umut.backend.Util.Parser.HtmlParserFactory;
 
 import java.io.IOException;
@@ -36,6 +38,8 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
     private final ProductsRepository productsRepository;
     private final ProductCategoriesRepository categoriesRepository;
     private final ProductPricesRepository pricesRepository;
+
+    private final IProductService productService;
 
     private AtomicInteger productIndex;
     private List<CustomProductModel> customProductModelList;
@@ -70,7 +74,16 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
     public void initialize2(String categoryUrl) throws URISyntaxException, ParseException, HttpException {
         var uri = new URI(categoryUrl);
         var website = HtmlParserFactory.Website.hostOf(uri.getHost());
-        HtmlParserFactory.getHtmlParser(website).parse(uri);
+        var productList = HtmlParserFactory.getHtmlParser(website).parseProducts(uri);
+    }
+
+    public void test(List<ProductDTO> productList) {
+        for (ProductDTO productDTO : productList) {
+            var product = productService.findProductByUrl(productDTO.getUrl());
+            if (product == null) {
+
+            }
+        }
     }
 
     public void initialize(String categoryUrl) {
@@ -169,7 +182,7 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
                 product.setImageUrl(imageUrl);
                 product.setName(productName);
                 product.setUrl(productUrl);
-                product.setCategoryId(categoryId);
+                //product.setCategoryId(categoryId);
                 existingProduct = productsRepository.save(product);
             }
 
@@ -179,7 +192,7 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
             }
 
             ProductPrice productPriceData = new ProductPrice();
-            productPriceData.setProductId(existingProduct.getId());
+            //productPriceData.setProductId(existingProduct.getId());
             productPriceData.setPrice(currentPrice);
 
             CustomProductModel productModel = new CustomProductModel();

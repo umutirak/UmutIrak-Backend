@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table(name = "APP_USERS")
 public class AppUser {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;

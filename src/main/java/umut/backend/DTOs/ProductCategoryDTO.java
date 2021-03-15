@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,4 +15,6 @@ public class ProductCategoryDTO {
     private String name;
     private String url;
     private String subPath;
+    private WebsiteDTO website;
+    private List<ProductDTO> products;
 }

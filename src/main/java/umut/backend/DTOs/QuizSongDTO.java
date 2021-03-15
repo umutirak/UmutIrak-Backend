@@ -11,4 +11,5 @@ public class QuizSongDTO {
     private String songName;
     private String songArtist;
     private String songUrl;
+    private QuizDTO quiz;
 }

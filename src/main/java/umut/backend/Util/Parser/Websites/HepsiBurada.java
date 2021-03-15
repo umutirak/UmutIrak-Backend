@@ -45,6 +45,11 @@ public class HepsiBurada extends WebsiteParser {
     }
 
     @Override
+    protected String getProductCategoryNameCssQuery() {
+        return "span[itemprop='name']";
+    }
+
+    @Override
     protected String getProductImageAttributeName() {
         return "data-src";
     }

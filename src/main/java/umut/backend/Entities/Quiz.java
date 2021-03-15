@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Setter
 public class Quiz {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
@@ -27,4 +28,7 @@ public class Quiz {
     private int playCount;
     @Enumerated(EnumType.STRING)
     private QuizStatus quizStatus;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<QuizSong> quizSongs;
 }

@@ -1,6 +1,5 @@
 package umut.backend.Entities;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -8,6 +7,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,24 +17,20 @@ import java.util.UUID;
 @Table(name = "PRODUCT_PRICES")
 public class ProductPrice {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @Column(name = "product_id")
-    @Type(type = "uuid-char")
-    private UUID productId;
     private BigDecimal price;
-    private Date createDate;
+    private LocalDateTime createDate;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @Setter(AccessLevel.NONE)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
     @PrePersist
     public void prePersist() {
         if (createDate == null)
-            this.createDate = new Date();
+            this.createDate = LocalDateTime.now();
     }
 }

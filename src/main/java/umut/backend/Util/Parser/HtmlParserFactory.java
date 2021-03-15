@@ -24,7 +24,8 @@ public class HtmlParserFactory {
         HEPSIBURADA("www.hepsiburada.com"),
         AMAZON("www.amazon.com.tr"),
         N11("www.n11.com"),
-        TRENDYOL("www.trendyol.com");
+        TRENDYOL("www.trendyol.com"),
+        GITTIGIDIYOR("www.gittigidiyor.com");
 
         final String host;
 

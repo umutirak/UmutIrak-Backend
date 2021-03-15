@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -17,25 +18,25 @@ import java.util.UUID;
 @Table(name = "PRODUCT_CATEGORIES")
 public class ProductCategory {
     @Id
-    @Type(type = "uuid-char")
+    @Type(type = "pg-uuid")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
     private String name;
     private String url;
-    private Date createDate;
+    private LocalDateTime createDate;
     private String subPath;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "website_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @Setter(AccessLevel.NONE)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "website_id", referencedColumnName = "id")
     private Website website;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "productCategory")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 
     @PrePersist
     public void prePersist() {
         if (createDate == null)
-            this.createDate = new Date();
+            this.createDate = LocalDateTime.now();
     }
 }

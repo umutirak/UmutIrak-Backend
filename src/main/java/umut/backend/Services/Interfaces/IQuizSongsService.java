@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface IQuizSongsService {
     List<QuizSong> getQuizSongsByQuizId(UUID quizId);
 
-    void addQuizSongs(List<QuizSongDTO> quizSongDTOList, UUID quizId);
+    void addQuizSongs(List<QuizSongDTO> quizSongDTOList);
 }
