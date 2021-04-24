@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +43,7 @@ public class HtmlParserFactory {
         }
     }
 
-    public static WebsiteParser getHtmlParser(Website website) {
-        return serviceCache.get(website);
+    public static WebsiteParser getHtmlParser(URI website) {
+        return serviceCache.get(Website.hostOf(website.getHost()));
     }
 }

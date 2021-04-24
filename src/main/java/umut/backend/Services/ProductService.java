@@ -6,14 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
-import umut.backend.DTOs.ProductPriceDTO;
 import umut.backend.Entities.Product;
 import umut.backend.Mapper.ProductMapper;
 import umut.backend.Repository.ProductsRepository;
-import umut.backend.Services.Interfaces.IProductPricesService;
 import umut.backend.Services.Interfaces.IProductService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,6 +43,7 @@ public class ProductService implements IProductService {
         return optionalProduct.map(mapper::fromProduct).orElse(null);
     }
 
+    // TODO: 24-Apr-21
     @Override
     public List<ProductDTO> findProductsByCategory(ProductCategoryDTO categoryDTO, Integer page) {
 //        var productCategory = mapper.toProductCategory(categoryDTO);

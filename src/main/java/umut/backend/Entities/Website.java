@@ -22,7 +22,7 @@ public class Website {
     private String url;
     private LocalDateTime createDate;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = ProductCategory.class)
     private List<ProductCategory> productCategories;
 
     @PrePersist

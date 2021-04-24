@@ -5,6 +5,7 @@ import umut.backend.Util.Parser.HtmlParserFactory;
 import umut.backend.Util.Parser.WebsiteParser;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -40,8 +41,8 @@ public class GittiGidiyor extends WebsiteParser {
     }
 
     @Override
-    protected String getPageNumberQuery() {
-        return "\\?sf=";
+    protected List<String> getPageNumberQueries() {
+        return Collections.singletonList("\\?sf=");
     }
 
     @Override

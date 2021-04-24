@@ -1,65 +1,46 @@
 package umut.backend.Batch.PriceParser;
 
 import lombok.RequiredArgsConstructor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
+import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
-import umut.backend.Entities.Product;
-import umut.backend.Entities.ProductCategory;
-import umut.backend.Entities.ProductPrice;
-import umut.backend.Repository.ProductCategoriesRepository;
-import umut.backend.Repository.ProductPricesRepository;
-import umut.backend.Repository.ProductsRepository;
-import umut.backend.Services.Interfaces.IProductService;
+import umut.backend.Services.ProductCategoriesService;
 import umut.backend.Util.Parser.HtmlParserFactory;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
-public class PriceParserReader implements ItemReader<CustomProductModel> {
-
-    private final ProductsRepository productsRepository;
-    private final ProductCategoriesRepository categoriesRepository;
-    private final ProductPricesRepository pricesRepository;
-
-    private final IProductService productService;
+@Slf4j
+public class PriceParserReader implements ItemReader<ProductDTO> {
+    private final ProductCategoriesService productCategoriesService;
 
     private AtomicInteger productIndex;
-    private List<CustomProductModel> customProductModelList;
+    private final List<ProductDTO> customProductModelList = new ArrayList<>();
 
 
     @BeforeStep
     public void before() {
-        System.out.println("Initializing Reader");
-        List<ProductCategory> categories = categoriesRepository.findAll();
-        for (ProductCategory category : categories) {
-            initialize(category.getUrl());
-        }
-        System.out.println("Read Complete");
+        log.info("Initializing Reader");
+        List<ProductCategoryDTO> categories = productCategoriesService.findAllProductCategories();
+        categories.forEach(i -> initialize(i.getUrl()));
+        log.info("Read Complete");
 
         productIndex = new AtomicInteger(0);
     }
 
     @Override
-    public CustomProductModel read() {
-        CustomProductModel data = null;
+    public ProductDTO read() {
+        ProductDTO data = null;
         int currentIndex = productIndex.getAndIncrement();
 
         if (currentIndex < customProductModelList.size()) {
@@ -71,139 +52,14 @@ public class PriceParserReader implements ItemReader<CustomProductModel> {
         return data;
     }
 
-    public void initialize2(String categoryUrl) throws URISyntaxException, ParseException, HttpException {
-        var uri = new URI(categoryUrl);
-        var website = HtmlParserFactory.Website.hostOf(uri.getHost());
-        var productList = HtmlParserFactory.getHtmlParser(website).parseProducts(uri);
-    }
-
-    public void test(List<ProductDTO> productList) {
-        for (ProductDTO productDTO : productList) {
-            var product = productService.findProductByUrl(productDTO.getUrl());
-            if (product == null) {
-
-            }
-        }
-    }
-
     public void initialize(String categoryUrl) {
-        List<CustomProductModel> productPrices = new ArrayList<>();
-        int index = 1;
-        while (true) {
-            String finalUrl = categoryUrl + "?sayfa=" + index;
-            System.out.println("Working on " + finalUrl);
-            Document document;
-            Response response;
-            try {
-                OkHttpClient httpClient = new OkHttpClient();
-                Request request = new Request.Builder().url(finalUrl).build();
-                response = httpClient.newCall(request).execute();
-                document = Jsoup.parse(response.body().string());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            if (index != 1 && !finalUrl.equals(response.request().url().toString())) {
-                break;
-            }
-
-            String ulClass = "product-list results-container do-flex ";
-            String productCategoryName = document.select("span[itemprop]").last().text();
-
-            ProductCategory productCategory = categoriesRepository.findByName(productCategoryName);
-            if (productCategory == null) {
-                ProductCategory category = new ProductCategory();
-                category.setName(productCategoryName);
-                category.setUrl(categoryUrl);
-                productCategory = categoriesRepository.save(category);
-            }
-            UUID categoryId = productCategory.getId();
-
-            Elements elementList = document.getElementsByClass(ulClass)
-                                           .first()
-                                           .children();
-            productPrices.addAll(findProductPricesByHtmlElements(elementList, categoryId));
-            index++;
-        }
-        System.out.println(categoryUrl + " Complete");
-        customProductModelList = Collections.unmodifiableList(productPrices);
-    }
-
-    private List<CustomProductModel> findProductPricesByHtmlElements(Elements elementList, UUID categoryId) {
-        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("tr-TR"));
-        List<CustomProductModel> customProductList = new ArrayList<>();
-
-        for (Element element : elementList) {
-            if (!"li".equals(element.tag().getName())) {
-                continue;
-            }
-            String productUrl = "https://www.hepsiburada.com" + element.select("a[href]").attr("href");
-
-            Elements productInfo = element.select("a").first().children();
-
-            Element productAttributes = productInfo.get(1);
-            if (productInfo.size() > 2)
-                productAttributes = productInfo.get(2);
-
-            Elements priceElement = productAttributes
-                    .getElementsByClass("price product-price");
-
-            String priceText;
-            if (!priceElement.isEmpty()) {
-                priceText = priceElement.first().text();
-            } else {
-                Element priceValueElement = productAttributes.getElementsByClass("price-value").first();
-                if (priceValueElement == null) continue;
-                priceText = priceValueElement.text();
-            }
-
-            Number parse;
-            try {
-                parse = currencyInstance.parse(priceText);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-                return customProductList;
-            }
-            BigDecimal currentPrice = new BigDecimal(parse.toString());
-
-            Product existingProduct = productsRepository.findByUrl(productUrl);
-            if (existingProduct == null) {
-                String imageUrl = productInfo.first()
-                                             .getElementsByClass("carousel-lazy-item")
-                                             .select("img[data-src]")
-                                             .first()
-                                             .attr("data-src");
-
-
-                String productName = productAttributes.getElementsByClass("product-title title").first().attr("title");
-
-                Product product = new Product();
-                product.setImageUrl(imageUrl);
-                product.setName(productName);
-                product.setUrl(productUrl);
-                //product.setCategoryId(categoryId);
-                existingProduct = productsRepository.save(product);
-            }
-
-            ProductPrice latestPrice = pricesRepository.findFirstByProductIdOrderByCreateDateDesc(existingProduct.getId());
-            if (latestPrice != null && currentPrice.compareTo(latestPrice.getPrice()) == 0) {
-                continue;
-            }
-
-            ProductPrice productPriceData = new ProductPrice();
-            //productPriceData.setProductId(existingProduct.getId());
-            productPriceData.setPrice(currentPrice);
-
-            CustomProductModel productModel = new CustomProductModel();
-            productModel.setProduct(existingProduct);
-            productModel.setCurrentPrice(productPriceData);
-            productModel.setLastPrice(latestPrice);
-            customProductList.add(productModel);
+        try {
+            URI url = new URI(categoryUrl);
+            var productList = HtmlParserFactory.getHtmlParser(url).parseProducts(url);
+            customProductModelList.addAll(productList);
+        } catch (URISyntaxException | ParseException | HttpException e) {
+            log.error(e.getMessage());
         }
 
-        return customProductList;
     }
-
-
 }

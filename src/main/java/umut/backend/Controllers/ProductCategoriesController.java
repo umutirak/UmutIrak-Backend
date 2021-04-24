@@ -31,12 +31,18 @@ public class ProductCategoriesController {
         return new ResponseEntity<>(productCategories, HttpStatus.OK);
     }
 
+    // TODO: 24-Apr-21
     @PostMapping("/createByUrl")
     public ResponseEntity<List<ProductDTO>> addProductCategoryByCategoryUrl(@RequestBody RequestAddProductsByCategoryUrl request) throws URISyntaxException, ParseException, HttpException {
-        var uri = new URI(request.getCategoryUrl());
-        var website = HtmlParserFactory.Website.hostOf(uri.getHost());
-        var productList = HtmlParserFactory.getHtmlParser(website).parseProducts(uri);
-        productFacade.createProducts(productList);
+//        var uri = new URI(request.getCategoryUrl());
+//        var allProductCategories = productCategoriesService.findAllProductCategories();
+//        for (ProductCategoryDTO category : allProductCategories) {
+//            var url = new URI(category.getUrl());
+//            var productList = HtmlParserFactory.getHtmlParser(url).parseProducts(url);
+//            productFacade.createProducts(productList);
+//        }
+//
+//        productFacade.createProducts(productList);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

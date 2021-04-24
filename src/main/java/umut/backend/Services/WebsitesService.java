@@ -25,7 +25,7 @@ public class WebsitesService implements IWebsitesService {
 
     @Override
     public WebsiteDTO addWebsite(String websiteUrl) throws URISyntaxException {
-        var host = new URI(websiteUrl).getHost();
+        var host = new URI(checkForHttp(websiteUrl)).getHost();
         var name = HtmlParserFactory.Website.hostOf(host).name();
         var website = new Website();
         website.setUrl(host);
@@ -37,7 +37,7 @@ public class WebsitesService implements IWebsitesService {
     @Nullable
     @Override
     public WebsiteDTO getWebsiteByUrl(String websiteUrl) throws URISyntaxException {
-        var uri = new URI(websiteUrl);
+        var uri = new URI(checkForHttp(websiteUrl));
         var website = websitesRepository.findByUrl(uri.getHost());
         return mapper.fromWebsite(website);
     }
@@ -54,5 +54,12 @@ public class WebsitesService implements IWebsitesService {
     public WebsiteDTO getWebsiteByName(String name) {
         var website = websitesRepository.findByName(name);
         return mapper.fromWebsite(website);
+    }
+
+    private String checkForHttp(String url) {
+        if (url.startsWith("http"))
+            return url;
+
+        return "https://" + url;
     }
 }

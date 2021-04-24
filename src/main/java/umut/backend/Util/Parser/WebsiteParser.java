@@ -1,17 +1,15 @@
 package umut.backend.Util.Parser;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.beans.factory.annotation.Autowired;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
 import umut.backend.DTOs.ProductPriceDTO;
 import umut.backend.DTOs.WebsiteDTO;
-import umut.backend.Services.Interfaces.IProductCategoriesService;
-import umut.backend.Services.Interfaces.IWebsitesService;
 import umut.backend.Util.Parser.Websites.Amazon;
 
 import java.io.IOException;
@@ -21,10 +19,12 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
-
+@Slf4j
 public abstract class WebsiteParser {
 
     public List<ProductDTO> parseProducts(URI categoryUrl) throws ParseException, HttpException, URISyntaxException {
@@ -34,6 +34,7 @@ public abstract class WebsiteParser {
         var productCategory = getProductCategory(categoryUrl, document);
 
         while (true) {
+            log.info("working on index " + pageNumber);
             var currentUrl = getUrlWithPageNumber(categoryUrl, pageNumber);
             document = getDocument(currentUrl);
             if (document == null)
@@ -104,8 +105,15 @@ public abstract class WebsiteParser {
     }
 
     private String getUrlWithPageNumber(URI url, int pageNumber) {
-        var pageQuery = getPageNumberQuery();
-        var split = url.toString().split(pageQuery);
+        var pageQueries = getPageNumberQueries();
+        String pageQuery = null;
+        String[] split = null;
+        for (String query : pageQueries) {
+            split = url.toString().split(query);
+            if (split.length == 1)
+                continue;
+            pageQuery = query;
+        }
         pageQuery = pageQuery.replace("\\", "");
         return split[0] + pageQuery + pageNumber + split[1].substring(1);
     }
@@ -193,7 +201,7 @@ public abstract class WebsiteParser {
 
     protected abstract String getProductsCssQuery();
 
-    protected abstract String getPageNumberQuery();
+    protected abstract List<String> getPageNumberQueries();
 
     protected abstract String getProductCategoryNameCssQuery();
 

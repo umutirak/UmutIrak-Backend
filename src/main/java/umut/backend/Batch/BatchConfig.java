@@ -14,14 +14,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import umut.backend.Batch.PriceParser.CustomProductModel;
 import umut.backend.Batch.PriceParser.PriceParserReader;
 import umut.backend.Batch.PriceParser.PriceParserWriter;
 import umut.backend.Batch.PriceParser.PriceParserWriterListener;
 import umut.backend.Batch.Ps5Finder.Models.ProductAvailability;
 import umut.backend.Batch.Ps5Finder.Ps5FinderReader;
 import umut.backend.Batch.Ps5Finder.Ps5FinderWriter;
+import umut.backend.DTOs.ProductDTO;
 
 @Configuration
 @EnableBatchProcessing
@@ -30,15 +29,15 @@ public class BatchConfig {
     @Bean
     public Job priceParserJob(@Qualifier("priceParserSteps") Step step, JobBuilderFactory jobBuilderFactory) {
         return jobBuilderFactory.get("price-parser-job")
-                .incrementer(new RunIdIncrementer())
-                .start(step)
-                .build();
+                                .incrementer(new RunIdIncrementer())
+                                .start(step)
+                                .build();
     }
 
     @Bean
     public Step priceParserSteps(StepBuilderFactory stepBuilderFactory, PriceParserWriter writer, PriceParserReader reader, PriceParserWriterListener writerListener) {
         return stepBuilderFactory.get("price-parser-step")
-                .<CustomProductModel, CustomProductModel>chunk(100)
+                .<ProductDTO, ProductDTO>chunk(100)
                 .reader(reader)
                 .processor(new PassThroughItemProcessor<>())
                 .writer(writer)
@@ -49,9 +48,9 @@ public class BatchConfig {
     @Bean
     public Job ps5FinderJob(@Qualifier("ps5FinderSteps") Step step, JobBuilderFactory jobBuilderFactory) {
         return jobBuilderFactory.get("ps5finder-job")
-                .incrementer(new RunIdIncrementer())
-                .start(step)
-                .build();
+                                .incrementer(new RunIdIncrementer())
+                                .start(step)
+                                .build();
     }
 
     @Bean

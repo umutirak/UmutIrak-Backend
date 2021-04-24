@@ -4,32 +4,36 @@ import com.mailjet.client.errors.MailjetException;
 import com.mailjet.client.transactional.SendContact;
 import com.mailjet.client.transactional.TrackOpens;
 import com.mailjet.client.transactional.TransactionalEmail;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemWriteListener;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import umut.backend.DTOs.ProductDTO;
 import umut.backend.Entities.Product;
-import umut.backend.Entities.ProductPrice;
 import umut.backend.Util.MailUtil;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
 @Component
 @Slf4j
-public class PriceParserWriterListener implements ItemWriteListener<CustomProductModel> {
+public class PriceParserWriterListener implements ItemWriteListener<ProductDTO> {
 
+
+    @Override
+    public void beforeWrite(List<? extends ProductDTO> items) {
+
+    }
+
+    @Override
+    public void afterWrite(List<? extends ProductDTO> items) {
+
+    }
+
+    @Override
+    public void onWriteError(Exception exception, List<? extends ProductDTO> items) {
+
+    }
 
     private enum HtmlTableColumns {
         PRODUCT_NAME("Product Name"),
@@ -55,41 +59,6 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
     private static final String HTML_TABLE_DATA_TAG = "<td style=\"border: 1px solid black;\">";
     private static final String HTML_TABLE_DATA_TAG_CLOSER = "</td>";
 
-    @Override
-    public void beforeWrite(List<? extends CustomProductModel> list) {
-
-    }
-
-    @Override
-    public void afterWrite(List<? extends CustomProductModel> list) {
-        StringBuilder mailBuilder = new StringBuilder();
-        for (CustomProductModel item : list) {
-            ProductPrice lastPrice = item.getLastPrice();
-            ProductPrice currentPrice = item.getCurrentPrice();
-            if (lastPrice == null) {
-                continue;
-            }
-
-            BigDecimal priceToCompare = percentage(lastPrice.getPrice());
-            if (priceToCompare.compareTo(currentPrice.getPrice()) > 0) {
-                String tableData = createTableDataFromProduct(item.getProduct(), currentPrice.getPrice(), lastPrice
-                        .getPrice());
-                mailBuilder.append(tableData);
-            }
-        }
-        if (mailBuilder.length() == 0) {
-            return;
-        }
-        String mailContent = createTableHeader() + mailBuilder.toString() + "</table>";
-        sendMail(mailContent);
-
-        System.out.println("Writing Complete");
-    }
-
-    @Override
-    public void onWriteError(Exception e, List<? extends CustomProductModel> list) {
-
-    }
 
     private void sendMail(String mailContent) {
 //        Email from = new Email("umt955@gmail.com");
@@ -119,8 +88,8 @@ public class PriceParserWriterListener implements ItemWriteListener<CustomProduc
         StringBuilder headerBuilder = new StringBuilder(initial);
         for (HtmlTableColumns columns : HtmlTableColumns.values()) {
             headerBuilder.append("<th style=\"border: 1px solid black;\">")
-                    .append(columns.getColumnText())
-                    .append("</th>");
+                         .append(columns.getColumnText())
+                         .append("</th>");
         }
         headerBuilder.append("</tr>");
 

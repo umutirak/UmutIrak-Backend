@@ -42,8 +42,8 @@ public class Trendyol extends WebsiteParser {
     }
 
     @Override
-    protected String getPageNumberQuery() {
-        return "&pi=";
+    protected List<String> getPageNumberQueries() {
+        return Collections.singletonList("&pi=");
     }
 
     @Override

@@ -40,8 +40,8 @@ public class Amazon extends WebsiteParser {
     }
 
     @Override
-    protected String getPageNumberQuery() {
-        return "&page=";
+    protected List<String> getPageNumberQueries() {
+        return Collections.singletonList("&page=");
     }
 
     @Override

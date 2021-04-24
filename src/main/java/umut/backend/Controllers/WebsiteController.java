@@ -7,9 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import umut.backend.Facades.Interfaces.IProductFacade;
 import umut.backend.Requests.RequestAddWebsite;
-import umut.backend.Util.Parser.HtmlParserFactory;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 
@@ -21,13 +19,9 @@ public class WebsiteController {
 
     private final IProductFacade productFacade;
 
+    // TODO: 24-Apr-21
     @PostMapping("/add")
-    public ResponseEntity<Void> addWebsite(@RequestBody RequestAddWebsite request) throws URISyntaxException, ParseException, HttpException {
-        var uri = new URI("https://www.hepsiburada.com/playstation-5-c-80757005?sayfa=1");
-        var website = HtmlParserFactory.Website.hostOf(uri.getHost());
-        var productList = HtmlParserFactory.getHtmlParser(website).parseProducts(uri);
-        productFacade.createProducts(productList);
-
+    public ResponseEntity<Void> addWebsite(@RequestBody RequestAddWebsite request) throws ParseException, HttpException {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

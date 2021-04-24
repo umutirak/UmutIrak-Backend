@@ -42,8 +42,8 @@ public class N11 extends WebsiteParser {
     }
 
     @Override
-    protected String getPageNumberQuery() {
-        return "\\?pg=";
+    protected List<String> getPageNumberQueries() {
+        return Arrays.asList("\\?pg=", "&pg=");
     }
 
     @Override
