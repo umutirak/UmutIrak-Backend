@@ -1,4 +1,4 @@
-package umut.backend.Util.Parser;
+package umut.backend.ProductParser;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
@@ -10,7 +10,7 @@ import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
 import umut.backend.DTOs.ProductPriceDTO;
 import umut.backend.DTOs.WebsiteDTO;
-import umut.backend.Util.Parser.Websites.Amazon;
+import umut.backend.ProductParser.Websites.Amazon;
 
 import java.io.IOException;
 import java.math.BigDecimal;

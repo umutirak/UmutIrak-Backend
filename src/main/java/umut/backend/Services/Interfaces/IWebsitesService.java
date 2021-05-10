@@ -3,6 +3,7 @@ package umut.backend.Services.Interfaces;
 import umut.backend.DTOs.WebsiteDTO;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
 
 public interface IWebsitesService {
@@ -13,4 +14,6 @@ public interface IWebsitesService {
     WebsiteDTO getWebsiteById(UUID id);
 
     WebsiteDTO getWebsiteByName(String name);
+
+    List<WebsiteDTO> findAllWebsites();
 }

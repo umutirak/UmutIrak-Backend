@@ -9,13 +9,7 @@ import umut.backend.Entities.Product;
 import java.math.BigDecimal;
 
 @Mapper(componentModel = "spring", uses = {ProductPriceMapper.class, ProductCategoriesMapper.class})
-public interface ProductMapper {
-
-    @Named(value = "defaultProduct")
-    Product toProduct(ProductDTO productDTO);
-
-    @Named("defaultProduct")
-    ProductDTO fromProduct(Product product);
+public interface ProductMapper extends BaseMapper<ProductDTO, Product> {
 
     @Mapping(target = "productPrices", qualifiedByName = "fromProductPriceWithoutProduct")
     @Mapping(target = "productCategory", qualifiedByName = "productCategoryWithoutProducts")

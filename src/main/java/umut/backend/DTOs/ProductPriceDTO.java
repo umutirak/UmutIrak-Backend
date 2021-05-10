@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ProductPriceDTO {
+public class ProductPriceDTO extends BaseDTO {
     private UUID id;
     private ProductDTO product;
     private BigDecimal price;

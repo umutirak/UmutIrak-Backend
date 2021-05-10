@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class QuizDTO {
+public class QuizDTO extends BaseDTO {
     private UUID id;
     private String quizName;
     private String quizImageUrl;

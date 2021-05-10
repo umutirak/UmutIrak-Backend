@@ -25,14 +25,14 @@ public class ProductCategoriesService implements IProductCategoriesService {
     @Override
     public ProductCategoryDTO getProductCategoryByName(String categoryName) {
         var category = categoriesRepository.findByName(categoryName);
-        return mapper.fromProductCategory(category);
+        return mapper.toDTO(category);
     }
 
     @Nullable
     @Override
     public ProductCategoryDTO getProductCategoryBySubPath(String subPath) {
         var category = categoriesRepository.findBySubPath(subPath);
-        return mapper.fromProductCategory(category);
+        return mapper.toDTO(category);
     }
 
     @Nullable
@@ -46,14 +46,14 @@ public class ProductCategoriesService implements IProductCategoriesService {
     @Override
     public ProductCategoryDTO getProductCategoryById(UUID id) {
         var productCategory = categoriesRepository.findById(id);
-        return productCategory.map(mapper::fromProductCategory).orElse(null);
+        return productCategory.map(mapper::toDTO).orElse(null);
 
     }
 
     @Override
     public ProductCategoryDTO addCategory(ProductCategoryDTO dto) {
-        var productCategory = mapper.toProductCategory(dto);
-        return mapper.fromProductCategory(categoriesRepository.save(productCategory));
+        var productCategory = mapper.toEntity(dto);
+        return mapper.toDTO(categoriesRepository.save(productCategory));
     }
 
     @Override

@@ -1,8 +1,8 @@
-package umut.backend.Util.Parser.Websites;
+package umut.backend.ProductParser.Websites;
 
 import org.springframework.stereotype.Component;
-import umut.backend.Util.Parser.HtmlParserFactory;
-import umut.backend.Util.Parser.WebsiteParser;
+import umut.backend.ProductParser.HtmlParserFactory;
+import umut.backend.ProductParser.WebsiteParser;
 
 import java.util.Arrays;
 import java.util.Collections;

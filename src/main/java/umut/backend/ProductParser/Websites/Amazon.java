@@ -1,63 +1,56 @@
-package umut.backend.Util.Parser.Websites;
+package umut.backend.ProductParser.Websites;
 
 import org.springframework.stereotype.Component;
-import umut.backend.Util.Parser.HtmlParserFactory;
-import umut.backend.Util.Parser.WebsiteParser;
+import umut.backend.ProductParser.HtmlParserFactory;
+import umut.backend.ProductParser.WebsiteParser;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @Component
-public class N11 extends WebsiteParser {
-
+public class Amazon extends WebsiteParser {
     @Override
     protected String getProductListCssQuery() {
-        return "section.group.listingGroup.resultListGroup.import-search-view";
+        return "div.s-main-slot.s-result-list.s-search-results.sg-row";
     }
 
     @Override
     protected List<String> getProductPriceCssQueries() {
-        return Arrays.asList("p.view-instant-price", "a.newPrice > ins");
+        return Collections.singletonList("span.a-offscreen");
     }
 
     @Override
     protected String getProductUrlCssQuery() {
-        return "div.pro > a";
+        return "a.a-link-normal";
     }
 
     @Override
     protected String getProductImageCssQuery() {
-        return "img.lazy";
+        return "img.s-image";
     }
 
     @Override
     protected String getProductNameCssQuery() {
-        return "h3.productName";
+        return "span.a-size-base-plus";
     }
 
     @Override
     protected String getProductsCssQuery() {
-        return "li.column";
+        return "[data-component-type='s-search-result']";
     }
 
     @Override
     protected List<String> getPageNumberQueries() {
-        return Arrays.asList("\\?pg=", "&pg=");
+        return Collections.singletonList("&page=");
     }
 
     @Override
     protected String getProductCategoryNameCssQuery() {
-        return "div.resultText > h1";
-    }
-
-    @Override
-    protected String getProductImageAttributeName() {
-        return "data-original";
+        return "li.a-spacing-micro.s-navigation-indent-1";
     }
 
     @Override
     protected HtmlParserFactory.Website getWebsite() {
-        return HtmlParserFactory.Website.N11;
+        return HtmlParserFactory.Website.AMAZON;
     }
 }

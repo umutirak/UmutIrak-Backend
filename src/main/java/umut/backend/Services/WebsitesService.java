@@ -7,13 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 import umut.backend.DTOs.WebsiteDTO;
 import umut.backend.Entities.Website;
 import umut.backend.Mapper.WebsiteMapper;
+import umut.backend.ProductParser.HtmlParserFactory;
 import umut.backend.Repository.WebsitesRepository;
 import umut.backend.Services.Interfaces.IWebsitesService;
-import umut.backend.Util.Parser.HtmlParserFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +33,7 @@ public class WebsitesService implements IWebsitesService {
         website.setUrl(host);
         website.setName(name);
 
-        return mapper.fromWebsite(websitesRepository.save(website));
+        return mapper.toDTO(websitesRepository.save(website));
     }
 
     @Nullable
@@ -39,27 +41,29 @@ public class WebsitesService implements IWebsitesService {
     public WebsiteDTO getWebsiteByUrl(String websiteUrl) throws URISyntaxException {
         var uri = new URI(checkForHttp(websiteUrl));
         var website = websitesRepository.findByUrl(uri.getHost());
-        return mapper.fromWebsite(website);
+        return mapper.toDTO(website);
     }
 
     @Nullable
     @Override
     public WebsiteDTO getWebsiteById(UUID id) {
         var website = websitesRepository.findById(id);
-        return website.map(mapper::fromWebsite).orElse(null);
+        return website.map(mapper::toDTO).orElse(null);
     }
 
     @Nullable
     @Override
     public WebsiteDTO getWebsiteByName(String name) {
         var website = websitesRepository.findByName(name);
-        return mapper.fromWebsite(website);
+        return mapper.toDTO(website);
+    }
+
+    @Override
+    public List<WebsiteDTO> findAllWebsites() {
+        return websitesRepository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
     }
 
     private String checkForHttp(String url) {
-        if (url.startsWith("http"))
-            return url;
-
-        return "https://" + url;
+        return url.startsWith("http") ? url : "https://" + url;
     }
 }

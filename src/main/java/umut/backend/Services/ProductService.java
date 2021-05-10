@@ -27,20 +27,20 @@ public class ProductService implements IProductService {
     @Override
     public ProductDTO addProduct(ProductDTO productDTO) {
         var product = productsRepository.save(mapper.toProductWithoutPrices(productDTO));
-        return mapper.fromProduct(product);
+        return mapper.toDTO(product);
     }
 
     @Override
     public List<ProductDTO> findAll() {
         List<Product> products = productsRepository.findAll();
-        return products.stream().map(mapper::fromProduct).collect(Collectors.toList());
+        return products.stream().map(mapper::toDTO).collect(Collectors.toList());
     }
 
     @Nullable
     @Override
     public ProductDTO findProductAllPriceDataById(UUID productId) {
         Optional<Product> optionalProduct = productsRepository.findById(productId);
-        return optionalProduct.map(mapper::fromProduct).orElse(null);
+        return optionalProduct.map(mapper::toDTO).orElse(null);
     }
 
     // TODO: 24-Apr-21

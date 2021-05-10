@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class WebsiteDTO {
+public class WebsiteDTO extends BaseDTO {
     UUID id;
     String name;
     String url;

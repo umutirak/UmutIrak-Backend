@@ -8,8 +8,8 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
 import umut.backend.DTOs.ProductCategoryDTO;
 import umut.backend.DTOs.ProductDTO;
+import umut.backend.ProductParser.HtmlParserFactory;
 import umut.backend.Services.ProductCategoriesService;
-import umut.backend.Util.Parser.HtmlParserFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;

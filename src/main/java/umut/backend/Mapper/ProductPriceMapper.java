@@ -8,15 +8,8 @@ import umut.backend.DTOs.ProductPriceDTO;
 import umut.backend.Entities.ProductPrice;
 
 @Mapper(componentModel = "spring")
-public interface ProductPriceMapper {
-    @Named(value = "defaultFromProductPrice")
-    ProductPriceDTO fromProductPrice(ProductPrice productPrice);
-
-    @IterableMapping(qualifiedByName = "defaultProduct")
-    @Named(value = "defaultToProductPrice")
-    ProductPrice toProductPrice(ProductPriceDTO productPriceDTO);
-
-    @IterableMapping(qualifiedByName = "defaultProduct")
+public interface ProductPriceMapper extends BaseMapper<ProductPriceDTO, ProductPrice> {
+    @IterableMapping(qualifiedByName = "defaultToEntity")
     @Mapping(target = "product.productPrices", ignore = true)
     ProductPrice toProductPriceWithoutProduct(ProductPriceDTO productPriceDTO);
 

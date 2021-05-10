@@ -1,6 +1,13 @@
 package umut.backend.Services;
 
 import lombok.AllArgsConstructor;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import umut.backend.DTOs.UserDTO;
 import umut.backend.Entities.AppUser;
 import umut.backend.Entities.Role;
@@ -9,13 +16,6 @@ import umut.backend.Mapper.UserMapper;
 import umut.backend.Repository.RolesRepository;
 import umut.backend.Repository.UserRepository;
 import umut.backend.Requests.RequestSignUp;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import umut.backend.Services.Interfaces.ICustomUserDetailsService;
 
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService, ICustomUser
         }
         AppUser user = mapper.toAppUser(request);
         user.setUserRoles(Collections.singleton(rolesRepository.findByName(UserRole.USER)));
-        return mapper.fromAppUser(userRepository.save(user));
+        return mapper.toDTO(userRepository.save(user));
     }
 
     @Override

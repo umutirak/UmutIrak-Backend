@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProductCategoryDTO {
+public class ProductCategoryDTO extends BaseDTO {
     private UUID id;
     private String name;
     private String url;

@@ -1,12 +1,12 @@
 package umut.backend.Services;
 
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umut.backend.DTOs.ProductPriceDTO;
 import umut.backend.Entities.ProductPrice;
 import umut.backend.Mapper.ProductPriceMapper;
 import umut.backend.Repository.ProductPricesRepository;
-import org.springframework.stereotype.Service;
 import umut.backend.Services.Interfaces.IProductPricesService;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class ProductPricesService implements IProductPricesService {
 
     @Override
     public void addProductPrice(ProductPriceDTO priceDTO) {
-        pricesRepository.save(mapper.toProductPrice(priceDTO));
+        pricesRepository.save(mapper.toEntity(priceDTO));
     }
 
     @Override
@@ -34,6 +34,6 @@ public class ProductPricesService implements IProductPricesService {
     @Override
     public ProductPriceDTO getLatestProductPriceByProductId(UUID productId) {
         ProductPrice productPrice = pricesRepository.findFirstByProductIdOrderByCreateDateDesc(productId);
-        return mapper.fromProductPrice(productPrice);
+        return mapper.toDTO(productPrice);
     }
 }

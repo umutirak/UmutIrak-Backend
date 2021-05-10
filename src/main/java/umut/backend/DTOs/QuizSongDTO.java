@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class QuizSongDTO {
+public class QuizSongDTO extends BaseDTO {
     private String songName;
     private String songArtist;
     private String songUrl;

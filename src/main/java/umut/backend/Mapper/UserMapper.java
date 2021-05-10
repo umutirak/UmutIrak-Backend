@@ -6,8 +6,6 @@ import umut.backend.Entities.AppUser;
 import umut.backend.Requests.RequestSignUp;
 
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+public interface UserMapper extends BaseMapper<UserDTO, AppUser> {
     AppUser toAppUser(RequestSignUp request);
-
-    UserDTO fromAppUser(AppUser user);
 }

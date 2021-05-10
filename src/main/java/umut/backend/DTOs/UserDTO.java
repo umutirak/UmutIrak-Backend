@@ -9,7 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserDTO {
+public class UserDTO extends BaseDTO {
     private String username;
     private String email;
     private Date createDate;
