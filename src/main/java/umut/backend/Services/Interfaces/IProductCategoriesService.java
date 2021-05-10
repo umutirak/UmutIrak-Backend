@@ -17,7 +17,5 @@ public interface IProductCategoriesService {
 
     ProductCategoryDTO addCategory(ProductCategoryDTO dto) throws URISyntaxException;
 
-    void addCategoryByCategoryUrl(String categoryUrl);
-
     List<ProductCategoryDTO> findAllProductCategories();
 }

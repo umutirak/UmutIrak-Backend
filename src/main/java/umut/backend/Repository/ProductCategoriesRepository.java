@@ -1,8 +1,8 @@
 package umut.backend.Repository;
 
-import umut.backend.Entities.ProductCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import umut.backend.Entities.ProductCategory;
 
 import java.util.UUID;
 

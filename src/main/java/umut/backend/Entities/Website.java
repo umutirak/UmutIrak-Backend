@@ -1,23 +1,17 @@
 package umut.backend.Entities;
 
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "WEBSITES")
-@Data
-public class Website {
-    @Id
-    @Type(type = "pg-uuid")
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+@Getter
+@Setter
+public class Website extends BaseEntity {
     private String name;
     private String url;
     private LocalDateTime createDate;

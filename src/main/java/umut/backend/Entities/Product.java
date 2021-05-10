@@ -2,23 +2,15 @@ package umut.backend.Entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "PRODUCTS")
-public class Product {
-    @Id
-    @Type(type = "pg-uuid")
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+public class Product extends BaseEntity {
     private String name;
     private String url;
     private String imageUrl;

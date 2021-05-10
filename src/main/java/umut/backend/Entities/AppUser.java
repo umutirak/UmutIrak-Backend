@@ -2,24 +2,16 @@ package umut.backend.Entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "APP_USERS")
-public class AppUser {
-    @Id
-    @Type(type = "pg-uuid")
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+public class AppUser extends BaseEntity {
     private String username;
     private String password;
     private String email;

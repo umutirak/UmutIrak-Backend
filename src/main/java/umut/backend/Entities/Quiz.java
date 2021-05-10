@@ -2,25 +2,17 @@ package umut.backend.Entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
-import umut.backend.Enums.QuizStatus;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
+import umut.backend.Enums.QuizStatus;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-public class Quiz {
-    @Id
-    @Type(type = "pg-uuid")
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+public class Quiz extends BaseEntity {
     private String quizName;
     private String quizImageUrl;
     @CreationTimestamp

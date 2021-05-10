@@ -1,22 +1,19 @@
 package umut.backend.Entities;
 
-import lombok.Data;
-import org.hibernate.annotations.Type;
+import lombok.Getter;
+import lombok.Setter;
 import umut.backend.Enums.UserRole;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "ROLES")
-@Data
-public class Role {
-    @Id
-    @Type(type = "pg-uuid")
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+@Getter
+@Setter
+public class Role extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole name;
 }
