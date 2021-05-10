@@ -10,9 +10,7 @@ import umut.backend.DTOs.ProductDTO;
 import umut.backend.Facades.Interfaces.IProductFacade;
 import umut.backend.Requests.RequestAddProductsByCategoryUrl;
 import umut.backend.Services.Interfaces.IProductCategoriesService;
-import umut.backend.Util.Parser.HtmlParserFactory;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
