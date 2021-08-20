@@ -2,7 +2,6 @@ package umut.backend.Services.Interfaces;
 
 import umut.backend.DTOs.ProductCategoryDTO;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +14,7 @@ public interface IProductCategoriesService {
 
     ProductCategoryDTO getProductCategoryById(UUID id);
 
-    ProductCategoryDTO addCategory(ProductCategoryDTO dto) throws URISyntaxException;
+    ProductCategoryDTO addCategory(ProductCategoryDTO dto);
 
     List<ProductCategoryDTO> findAllProductCategories();
 }

@@ -42,7 +42,7 @@ public class PriceParserWriterListener implements ItemWriteListener<ProductDTO> 
         PRODUCT_LAST_PRICE("Old Price"),
         PRODUCT_CURRENT_PRICE("Current Price");
 
-        String columnText;
+        final String columnText;
 
         HtmlTableColumns(String columnText) {
             this.columnText = columnText;

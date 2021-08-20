@@ -7,7 +7,10 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.stereotype.Component;
-import umut.backend.Batch.Ps5Finder.Models.*;
+import umut.backend.Batch.Ps5Finder.Models.AmazonFrance;
+import umut.backend.Batch.Ps5Finder.Models.AmazonSpain;
+import umut.backend.Batch.Ps5Finder.Models.AmazonWebsite;
+import umut.backend.Batch.Ps5Finder.Models.ProductAvailability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Ps5FinderReader implements ItemReader<ProductAvailability> {
     private AtomicInteger index;
 
-    static List<AmazonWebsite> websites = new ArrayList<>();
+    static final List<AmazonWebsite> websites = new ArrayList<>();
 
     static {
         //websites.add(new AmazonItaly());

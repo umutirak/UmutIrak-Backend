@@ -7,15 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import umut.backend.Entities.Role;
-import umut.backend.Enums.UserRole;
 import umut.backend.Services.CustomUserDetailsService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,7 +32,7 @@ public class JwtUtil {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+        var claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
@@ -51,13 +48,11 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
-        Set<UserRole> roles = userDetailsService.findUserRoles(username)
+        var roles = userDetailsService.findUserRoles(username)
                 .stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Roles", roles);
-        return createToken(claims, username);
+        return createToken(Map.of("Roles", roles), username);
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -70,8 +65,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+    public boolean validateToken(String token, UserDetails userDetails) {
+        var username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
